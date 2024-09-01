@@ -8,7 +8,7 @@ function App() {
       <Navbar />
       <div className="container mt-4">
         <h1>Welcome to B2B Management Platform</h1>
-        <p>Select a page from the navigation bar to get started.</p>
+        <p>Select a page from the navigation bar to great started.</p>
       </div>
     </div>
   );

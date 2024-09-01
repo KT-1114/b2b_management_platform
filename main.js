@@ -12,7 +12,12 @@ function createWindow() {
     },
   });
 
-  win.loadFile(path.join(__dirname, 'dist', 'index.html'));
+  // Check if the app is running in development mode
+  const startUrl = process.env.NODE_ENV === 'development' 
+    ? 'http://localhost:9000' // Webpack Dev Server URL
+    : `file://${path.join(__dirname, 'dist', 'index.html')}`; // File path in production mode
+
+  win.loadURL(startUrl);
 }
 
 app.whenReady().then(createWindow);
