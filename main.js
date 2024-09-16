@@ -1,4 +1,4 @@
-// main.js
+require('dotenv').config();
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
 
@@ -10,6 +10,8 @@ function createWindow() {
       nodeIntegration: true,
       contextIsolation: false,
     },
+    autoHideMenuBar:true,
+    icon: path.join(__dirname,'./src/assets/Dhandho.ico')
   });
 
   // Check if the app is running in development mode
@@ -18,6 +20,11 @@ function createWindow() {
     : `file://${path.join(__dirname, 'dist', 'index.html')}`; // File path in production mode
 
   win.loadURL(startUrl);
+
+  // Catch all routes and serve index.html
+  win.webContents.on('did-fail-load', () => {
+    win.loadURL(startUrl);  // Re-load index.html on any route failure
+  });
 }
 
 app.whenReady().then(createWindow);

@@ -1,4 +1,3 @@
-// webpack.config.js
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
@@ -21,6 +20,18 @@ module.exports = {
           },
         },
       },
+      {
+        test: /\.(jpg|jpeg|png|gif|svg)$/,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: '[path][name].[ext]',
+              context: 'src', // Adjust based on your directory structure
+            },
+          },
+        ],
+      },
     ],
   },
   resolve: {
@@ -37,5 +48,6 @@ module.exports = {
     },
     compress: true,
     port: 9000,
+    historyApiFallback: true // this is the key part to serve index.html on all routes
   },
 };

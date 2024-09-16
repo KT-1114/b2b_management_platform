@@ -1,45 +1,82 @@
-// src/Navbar.js
 import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from './AuthProvider';
+import { FaHome, FaBox, FaList, FaSignInAlt, FaWarehouse } from 'react-icons/fa';
+import logo from '../assets/Dhandho_white_crop.png';
 
 function Navbar() {
-  const [currentPage, setCurrentPage] = useState('home');
+  const { user, signOut } = useAuth();
+  const location = useLocation();
 
-  const navigateTo = (page) => {
-    setCurrentPage(page);
+  const [hoveredIndex, setHoveredIndex] = useState(null);
+
+  const handleLogout = () => {
+    signOut();
+  };
+
+  const navItemStyle = (path) => {
+    const isActive = location.pathname === path;
+    const isHovered = hoveredIndex === path;
+
+    return {
+      position: 'relative',
+      color: 'white',
+      textDecoration: 'none',
+      display: 'inline-block',
+      overflow: 'hidden',
+      borderRadius: '0.25rem',
+      transition: 'color 0.3s ease',
+      backgroundColor: isActive || isHovered ? 'rgba(0, 0, 0, 0)' : 'transparent', // Make background transparent to show gradient border
+      boxShadow: isActive || isHovered
+        ? '0 0 0 2px rgba(223, 91, 211, 0.6), 0 0 0 4px rgba(126, 91, 246, 0.6)'
+        : 'none',
+      zIndex: 1, // Ensure the gradient appears above other elements
+    };
   };
 
   return (
-    <>
-      <nav className="navbar navbar-expand-lg navbar-light bg-light">
-        <a className="navbar-brand" href="#">B2B Platform</a>
-        <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-          <span className="navbar-toggler-icon"></span>
-        </button>
-        <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav">
-            <li className={`nav-item ${currentPage === 'home' ? 'active' : ''}`}>
-              <a className="nav-link" href="#" onClick={() => navigateTo('home')}>Home</a>
-            </li>
-            <li className={`nav-item ${currentPage === 'products' ? 'active' : ''}`}>
-              <a className="nav-link" href="#" onClick={() => navigateTo('products')}>Products</a>
-            </li>
-            <li className={`nav-item ${currentPage === 'orders' ? 'active' : ''}`}>
-              <a className="nav-link" href="#" onClick={() => navigateTo('orders')}>Orders</a>
-            </li>
-            <li className={`nav-item ${currentPage === 'profile' ? 'active' : ''}`}>
-              <a className="nav-link" href="#" onClick={() => navigateTo('profile')}>Profile</a>
-            </li>
-          </ul>
-        </div>
-      </nav>
-
-      <div className="container mt-4">
-        {currentPage === 'home' && <h1>Home Page</h1>}
-        {currentPage === 'products' && <h1>Products Page</h1>}
-        {currentPage === 'orders' && <h1>Orders Page</h1>}
-        {currentPage === 'profile' && <h1>Profile Page</h1>}
+    <nav className="navbar navbar-expand navbar-dark border-bottom border-secondary border-5 bg-black">
+      <a className="navbar-brand align-items-center" href="#">
+        <img src={logo} height={'25px'} alt="Logo" />
+      </a>
+      <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span className="navbar-toggler-icon"></span>
+      </button>
+      <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <ul className="navbar-nav ml-auto">
+          <li className="nav-item align-items-center me-3 rounded" style={navItemStyle('/')} onMouseEnter={() => setHoveredIndex('/')} onMouseLeave={() => setHoveredIndex(null)}>
+            <Link className="nav-link" to="/">
+              <FaHome className="me-2" /> Home
+            </Link>
+          </li>
+          <li className="nav-item align-items-center me-3 rounded" style={navItemStyle('/Products')} onMouseEnter={() => setHoveredIndex('/Products')} onMouseLeave={() => setHoveredIndex(null)}>
+            <Link className="nav-link" to="/Products">
+              <FaBox className="me-2" /> Products
+            </Link>
+          </li>
+          <li className="nav-item align-items-center me-3 rounded" style={navItemStyle('/Orders')} onMouseEnter={() => setHoveredIndex('/Orders')} onMouseLeave={() => setHoveredIndex(null)}>
+            <Link className="nav-link" to="/Orders">
+              <FaList className="me-2" /> Orders
+            </Link>
+          </li>
+          <li className="nav-item align-items-center me-3 rounded " style={navItemStyle('/Inventory')} onMouseEnter={() => setHoveredIndex('/Inventory')} onMouseLeave={() => setHoveredIndex(null)}>
+            <Link className="nav-link" to="/Inventory">
+              <FaWarehouse className="me-2" /> Inventory
+            </Link>
+          </li>
+        </ul>
       </div>
-    </>
+      <div className="d-flex align-items-center ml-auto">
+        {user && (
+          <>
+            <span className="text-white">{user.email}</span>
+            <button className="btn btn-link text-white" onClick={handleLogout}>
+              <FaSignInAlt className="me-2" />
+            </button>
+          </>
+        )}
+      </div>
+    </nav>
   );
 }
 
