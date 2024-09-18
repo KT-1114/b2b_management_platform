@@ -19,34 +19,29 @@ const AuthProvider = ({ children }) => {
 
   const signIn = async ({ email, password }) => {
     const { error } = await supabase.auth.signInWithPassword({
-      email: email ? email : null,
-      password,
+      email: email,
+      password
     });
     if (error) console.error('Error signing in:', error.message);
   };
 
-  const signUp = async ({ email, password, role }) => {
-    const {data, error } = await supabase.auth.signUp({
+  const signUp = async ({ email, password, firstName, lastName,mobile }) => {
+    const { data, error } = await supabase.auth.signUp({
       email: email ? email : null,
       password,
+      options: {
+        data: {
+          first_name: firstName,
+          last_name: lastName,
+          phone: mobile
+        },
+      }
+
     });
-  console.log('signUp complete')
+    console.log('signUp complete')
     if (error) {
       console.error('Error during sign-up/sign-in:', error.message);
       return;
-    }
-    // If the sign-up/sign-in is successful, assign the role
-    if (data) {
-        // Assign the role using the user's UUID (from auth.users table)
-        const { data2: data, roleError } = await supabase
-          .from('user_roles')
-          .insert([{ user_id: data.user.id, role }]);
-  
-        if (roleError) {
-          console.error('Error assigning role:', roleError.message);
-        } else {
-          console.log('Role assigned:', data2);
-        }
     }
   };
 
