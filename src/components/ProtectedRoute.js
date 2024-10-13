@@ -9,7 +9,11 @@ const ProtectedRoute = ({ children }) => {
   return user ? (
     children // Render children (Home page) if authenticated
   ) : (
-    <Navigate to="/auth" state={{ from: location }} />
+    <>{
+      console.log('Redirecting to signIn')
+    }
+    <Navigate to="/rolePage" state={{ from: location }} />
+    </>
   );
 };
 

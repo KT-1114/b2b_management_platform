@@ -28,7 +28,7 @@ function Navbar() {
       transition: 'color 0.3s ease',
       backgroundColor: isActive || isHovered ? 'rgba(0, 0, 0, 0)' : 'transparent', // Make background transparent to show gradient border
       boxShadow: isActive || isHovered
-        ? '0 0 0 2px rgba(223, 91, 211, 0.6), 0 0 0 4px rgba(126, 91, 246, 0.6)'
+        ? '0 0 1px 2px rgba(223, 91, 211, 0.6), 0 0 2px 4px rgba(126, 91, 246, 0.6)'
         : 'none',
       zIndex: 1, // Ensure the gradient appears above other elements
     };
@@ -70,7 +70,7 @@ function Navbar() {
         {user && (
           <>
             <span className="text-white">{user.email}</span>
-            <button className="btn btn-link text-white" onClick={handleLogout}>
+            <button className="btn text-white" onClick={handleLogout}>
               <FaSignInAlt className="me-2" />
             </button>
           </>
