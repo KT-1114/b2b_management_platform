@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Toast from './Toast';
 import logo from '../assets/Dhandho.png';
 import { useAuth } from './AuthProvider'; // Assuming useAuth is defined in AuthContext
+import { useNavigate } from 'react-router-dom';
 
 export default function EmployeeAuth() {
   const [email, setEmail] = useState('');
@@ -14,6 +15,7 @@ export default function EmployeeAuth() {
   const [formType, setFormType] = useState('login'); // 'login', 'checkRequest', or 'signUp'
   const [isRequestApproved, setIsRequestApproved] = useState(false); // State for request approval
   const { signIn, checkRequest, employeeSignUp, newEmployeeSignUp } = useAuth();
+  const navigate = useNavigate();
 
   // Toast state
   const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
@@ -30,12 +32,12 @@ export default function EmployeeAuth() {
   const handleCheckRequestSubmit = async (e) => {
     e.preventDefault();
     const request = await checkRequest({ email });
-    if (request.request_status == 'approved') {
+    if (request.request_status === 'approved') {
       setIsRequestApproved(true);
-      setFirstName(request.first_name)
-      setLastName(request.last_name)
-      setPhone(request.phone)
-      setBusinessId(request.business_id)
+      setFirstName(request.first_name);
+      setLastName(request.last_name);
+      setPhone(request.phone);
+      setBusinessId(request.business_id);
     }
   };
 
@@ -52,14 +54,10 @@ export default function EmployeeAuth() {
 
   const handleNewSignUpSubmit = (e) => {
     e.preventDefault();
-    // if(){
-
-    //   return;
-    // }
     newEmployeeSignUp({
       firstName, lastName, email, phone, businessId
     });
-  }
+  };
 
   const closeToast = () => setToast({ ...toast, show: false });
 
@@ -77,6 +75,11 @@ export default function EmployeeAuth() {
               </div>
 
               <h2 className="text-center mb-4">{formType === 'login' ? 'Log In' : formType === 'checkRequest' ? 'Check Request' : 'Sign Up'}</h2>
+
+              <div className="position-absolute" style={{ top: '10px', left: '10px' }}>
+                <a href='#' style={{ cursor: 'pointer' }} onClick={() => navigate('/rolePage')}>Back
+                </a>
+              </div>
 
               {formType === 'login' && (
                 <form onSubmit={handleLoginSubmit}>
@@ -177,6 +180,7 @@ export default function EmployeeAuth() {
                   </div>
                 </>
               )}
+
               {formType === 'signUp' && (
                 <form onSubmit={handleNewSignUpSubmit}>
                   <div className="mb-3">
@@ -245,6 +249,6 @@ export default function EmployeeAuth() {
           </div>
         </div>
       </div>
-    </div >
+    </div>
   );
 }

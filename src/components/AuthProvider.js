@@ -65,7 +65,7 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  const businessSignUp = async ({ firstName, lastName, email, password, phone, role, businessName, businessContact, businessEmail, businessSlogan, businessAddress }) => {
+  const businessSignUp = async ({ firstName, lastName, email, password, phone, businessName, businessContact, businessEmail, businessSlogan, businessAddress }) => {
     const { error } = await supabase.auth.signUp({
       email: email ? email : null,
       password,
@@ -74,7 +74,7 @@ const AuthProvider = ({ children }) => {
           first_name: firstName,
           last_name: lastName,
           phone: phone,
-          user_role: role,
+          user_role: 'Business Owner',
           business_name: businessName,
           business_contact: businessContact,
           business_email: businessEmail,

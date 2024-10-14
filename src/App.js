@@ -11,6 +11,7 @@ import Navbar from './components/navbar';
 import SignUp from './pages/SignUp';
 import RolePage from './components/RolePage';
 import EmployeeAuth from './components/EmployeeAuth';
+import BusinessAuth from './components/BusinessAuth';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Route path="/signUp" element={<SignUp />} />
           <Route path="/rolePage" element={<RolePage />} />
           <Route path="/employeeAuth" element={<EmployeeAuth />} />
+          <Route path="/businessAuth" element={<BusinessAuth />} />
           <Route path="/" element={<ProtectedRoute><><Navbar /><Home /></></ProtectedRoute>} />
           <Route path="/products" element={<ProtectedRoute><><Navbar /><Products /></></ProtectedRoute>} />
           <Route path="/orders" element={<ProtectedRoute><><Navbar /><Orders /></></ProtectedRoute>} />
