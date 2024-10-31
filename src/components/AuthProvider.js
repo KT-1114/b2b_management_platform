@@ -1,19 +1,38 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import supabase from '../supabaseClient';
-import Toast from './Toast'; // Ensure you import your Toast component
+import Toast from './Toast';
 import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [profile, setProfile] = useState(null);
   const [toast, setToast] = useState({ show: false, type: '', message: '' });
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const { data: listener } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log('Auth State Changed', event);
-      setUser(session?.user ?? null);
+    const { data: listener } = supabase.auth.onAuthStateChange(async (event, session) => {
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+      setLoading(false);
+
+      // if (currentUser) {
+      //   const { data: profileData, error } = await supabase
+      //     .from('Businesses')
+      //     .select('*')
+      //     .eq('id', currentUser.id)
+      //     .single();
+
+      //   if (error) {
+      //     setToast({ show: true, type: 'danger', message: 'Failed to load user profile.' });
+      //   } else {
+      //     setProfile(profileData);
+      //   }
+      // } else {
+      //   setProfile(null);
+      // }
     });
 
     return () => {
@@ -22,17 +41,16 @@ const AuthProvider = ({ children }) => {
   }, []);
 
   const employeeSignIn = async (email, password) => {
-    const { data, error } = await supabase
+    const { data: employeeRequest, error } = await supabase
       .from('employee_requests')
       .select('request_status, business_id')
       .eq('email', email)
       .single();
-      console.log('emp data', data)
-    if (data) {
+      
+    if (employeeRequest) {
       const { request_status, business_id } = employeeRequest;
   
       if (request_status === 'pending' || request_status === 'rejected') {
-        // Show message about request status
         setToast({
           show: true,
           type: 'warning',
@@ -42,13 +60,11 @@ const AuthProvider = ({ children }) => {
       }
   
       if (request_status === 'approved') {
-        // Prompt for password creation
         navigate('/create-password', { state: { email } });
         return;
       }
     }
   
-    // If not an employee request, attempt normal sign-in
     const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
     if (signInError) {
       setToast({ show: true, type: 'danger', message: signInError.message });
@@ -80,13 +96,11 @@ const AuthProvider = ({ children }) => {
           business_email: businessEmail,
           business_slogan: businessSlogan,
           business_address: businessAddress,
-          
         },
       },
     });
     
     if (error) {
-      console.error('Error during sign-up:', error.message);
       setToast({ show: true, type: 'danger', message: error.message });
     }
     else{
@@ -119,7 +133,7 @@ const AuthProvider = ({ children }) => {
     }
   }
 
-  const employeeSignUp = async({firstName, lastName, email, password, phone, businessId,}) => {
+  const employeeSignUp = async({firstName, lastName, email, password, phone, businessId,businessUid}) => {
     const { error } = await supabase.auth.signUp({
       email: email ? email : null,
       password,
@@ -128,42 +142,23 @@ const AuthProvider = ({ children }) => {
           first_name: firstName,
           last_name: lastName,
           phone: phone,
-          user_role: 'employee',
-          business_id: businessId
+          user_role: 'Employee',
+          business_id: businessId,
+          business_uid: businessUid
         },
       },
     });
     
     if (error) {
-      console.error('Error during sign-up:', error.message);
       setToast({ show: true, type: 'danger', message: error.message });
     }
-    else{
-      const {error} = await supabase
-      .from('employee_requests')
-      .delete()
-      .eq('email', email)
-      navigate('/');
-    }
+      else {
+        navigate('/');
+      }
   }
+
   const newEmployeeSignUp = async ({ firstName, lastName, email, phone, businessId }) => {
-    // const { data: existingRequest } = await supabase
-    //   .from('employee_requests')
-    //   .select('business_id, request_status')
-    //   .eq('email', email);
-  
-    // if (existingRequest?.length > 0) {
-    //   // Show message: There is an existing request for this email
-    //   const { business_id, request_status } = existingRequest[0];
-    //   setToast({
-    //     show: true,
-    //     type: 'info',
-    //     message: `The request for ${email} associated with business ${business_id} is: ${request_status}`,
-    //   });
-    //   return;
-    // }
-  
-    const { error } = await supabase
+      const { error } = await supabase
       .from('employee_requests')
       .insert({
         first_name: firstName,
@@ -182,6 +177,8 @@ const AuthProvider = ({ children }) => {
 
   const signOut = async () => {
     await supabase.auth.signOut();
+    setUser(null);
+    setProfile(null);
     setToast({ show: true, type: 'info', message: 'Successfully signed out!' });
   };
 
@@ -190,7 +187,7 @@ const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, signIn, businessSignUp, employeeSignUp, newEmployeeSignUp, signOut, employeeSignIn, checkRequest }}>
+    <AuthContext.Provider value={{ user, profile, loading, signIn, businessSignUp, employeeSignUp, newEmployeeSignUp, signOut, employeeSignIn, checkRequest }}>
       {children}
       <Toast
         type={toast.type}

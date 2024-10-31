@@ -12,6 +12,7 @@ export default function EmployeeAuth() {
   const [lastName, setLastName] = useState('');
   const [phone, setPhone] = useState('');
   const [businessId, setBusinessId] = useState('');
+  const [businessUid, setBusinessUid] = useState('')
   const [formType, setFormType] = useState('login'); // 'login', 'checkRequest', or 'signUp'
   const [isRequestApproved, setIsRequestApproved] = useState(false); // State for request approval
   const { signIn, checkRequest, employeeSignUp, newEmployeeSignUp } = useAuth();
@@ -38,6 +39,7 @@ export default function EmployeeAuth() {
       setLastName(request.last_name);
       setPhone(request.phone);
       setBusinessId(request.business_id);
+      setBusinessUid(request.business_uid);
     }
   };
 
@@ -48,7 +50,7 @@ export default function EmployeeAuth() {
       return;
     }
     employeeSignUp({
-      firstName, lastName, email, password, phone, businessId,
+      firstName, lastName, email, password, phone, businessId,businessUid
     });
   };
 
