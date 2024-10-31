@@ -7,17 +7,18 @@ import Toast from '../components/Toast';
 const BusinessAuth = () => {
     const [step, setStep] = useState(1);
     const [formType, setFormType] = useState('login');
-    const [firstName, setFirstName] = useState('a');
-    const [lastName, setLastName] = useState('b');
-    const [email, setEmail] = useState('a@gmail.com');
-    const [phone, setPhone] = useState('123');
-    const [password, setPassword] = useState('112233');
-    const [confirmPassword, setConfirmPassword] = useState('112233');
-    const [businessName, setBusinessName] = useState('bname');
-    const [businessEmail, setBusinessEmail] = useState('b@gmail.com');
-    const [businessContact, setBusinessContact] = useState('789');
-    const [businessSlogan, setBusinessSlogan] = useState('slogan');
-    const [businessAddress, setBusinessAddress] = useState('add');
+    const [firstName] = useState('Jane');
+    const [lastName] = useState('Smith');
+    const [email] = useState('jane.smith@gmail.com');
+    const [phone] = useState('2345678901');
+    const [password] = useState('112233');
+    const [confirmPassword] = useState('112233');
+    const [businessName] = useState('Business 2');
+    const [businessEmail] = useState('business2@gmail.com');
+    const [businessContact] = useState('2345678901');
+    const [businessSlogan] = useState('Excellence in Service');
+    const [businessAddress] = useState('456 Elm St, Townsville');
+    
     const { businessSignUp, signIn } = useAuth();
     const navigate = useNavigate();
 

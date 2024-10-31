@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import logo from '../assets/Dhandho.png';
 import Toast from '../components/Toast';
 import './buttons.css';
+import { useAuth } from './AuthProvider';
 
 export default function RolePage() {
-    const [role, setRole] = useState('');
     const navigate = useNavigate();
+    const {loading} = useAuth
 
     // Toast state
     const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
