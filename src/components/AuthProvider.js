@@ -27,7 +27,7 @@ const AuthProvider = ({ children }) => {
           if (data) {
             setUserBusinessData(data); // Set the business data in the state
           } else if (error) {
-            setToast({ show: true, type: 'danger', message: `${erromessage}` });
+            setToast({ show: true, type: 'danger', message: `${error.message}` });
           }
         } else {
           setUserBusinessData(null); // Clear business if the user logs out

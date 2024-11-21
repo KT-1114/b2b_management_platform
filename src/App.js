@@ -14,6 +14,7 @@ import BusinessAuth from './components/BusinessAuth';
 import ManageEmployees from './pages/ManageEmployees';
 import { ContextProvider } from './components/UserContext';
 import Connections from './pages/Connections';
+import PlaceOrder from './pages/PlaceOrder';
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
             <Route path="/inventory" element={<><Navbar /><ProtectedRoute children={<Inventory />} /></>} />
             <Route path="/connections" element={<><Navbar /><ProtectedRoute children={<Connections />} /></>} />
             <Route path="/profile" element={<ProtectedRoute><><Navbar /><Profile /></></ProtectedRoute>} />
+            <Route path="/place-order" element={<ProtectedRoute><><Navbar /><PlaceOrder /></></ProtectedRoute>} />
           </Routes>
         </ContextProvider>
       </AuthProvider>

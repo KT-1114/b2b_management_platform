@@ -8,6 +8,8 @@ import {
   FaSignInAlt,
   FaWarehouse,
 } from "react-icons/fa";
+import { MdInventory } from "react-icons/md";
+import { ImMakeGroup } from "react-icons/im";
 import logo from "../assets/Dhandho_white_crop.png";
 // import BusinessSearch from "./BusinessSearch";
 
@@ -98,17 +100,7 @@ function Navbar() {
             onMouseLeave={() => setHoveredIndex(null)}
           >
             <Link className="nav-link" to="/Inventory">
-              <FaWarehouse className="me-2" /> Inventory
-            </Link>
-          </li>
-          <li
-            className="nav-item align-items-center me-3 rounded "
-            style={navItemStyle("/Profile")}
-            onMouseEnter={() => setHoveredIndex("/Profile")}
-            onMouseLeave={() => setHoveredIndex(null)}
-          >
-            <Link className="nav-link" to="/Profile">
-              <FaWarehouse className="me-2" /> Profile
+              <MdInventory className="me-2" /> Inventory
             </Link>
           </li>
           <li
@@ -118,7 +110,7 @@ function Navbar() {
             onMouseLeave={() => setHoveredIndex(null)}
           >
             <Link className="nav-link" to="/Connections">
-              <FaWarehouse className="me-2" /> Connections
+              <ImMakeGroup className="me-2" /> Connections
             </Link>
           </li>
         </ul>
