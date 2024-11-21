@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
-import Toast from './Toast';
-import logo from '../assets/Dhandho.png';
-import { useAuth } from './AuthProvider'; // Assuming useAuth is defined in AuthContext
+import { useAuth } from './AuthProvider';
 import { useNavigate } from 'react-router-dom';
+import logo from '../assets/Dhandho_white.png';
+import Toast from '../components/Toast';
+import './AuthStyles.css';
 
-export default function EmployeeAuth() {
+const EmployeeAuth = () => {
+  const [steplogin, setSteplogin] = useState(1);
+  const [stepsignup, setStepsignup] = useState(1);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -13,244 +16,528 @@ export default function EmployeeAuth() {
   const [phone, setPhone] = useState('');
   const [businessId, setBusinessId] = useState('');
   const [businessUid, setBusinessUid] = useState('')
-  const [formType, setFormType] = useState('login'); // 'login', 'checkRequest', or 'signUp'
+  const [formType, setFormType] = useState('login');
   const [isRequestApproved, setIsRequestApproved] = useState(false); // State for request approval
   const { signIn, checkRequest, employeeSignUp, newEmployeeSignUp } = useAuth();
   const navigate = useNavigate();
 
   // Toast state
-  const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
+  const [toast, setToast] = useState({
+    show: false,
+    message: '',
+    type: 'success',
+  });
 
-  const handleLoginSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      await signIn({ email, password });
-    } catch (error) {
-      setToast({ show: true, message: error.message, type: 'danger' });
+  const handleNextlogin = () => {
+    if (steplogin === 1) {
     }
+    setSteplogin(steplogin + 1);
   };
 
-  const handleCheckRequestSubmit = async (e) => {
-    e.preventDefault();
-    const request = await checkRequest({ email });
-    if (request.request_status === 'approved') {
-      setIsRequestApproved(true);
-      setFirstName(request.first_name);
-      setLastName(request.last_name);
-      setPhone(request.phone);
-      setBusinessId(request.business_id);
-      setBusinessUid(request.business_uid);
+  const handleNextsignup = () => {
+    if (stepsignup === 1) {
+      if (!firstName || !lastName || !phone) {
+        setToast({
+          show: true,
+          message: 'Please fill out all fields.',
+          type: 'danger',
+        });
+        return;
+      }
     }
-  };
 
-  const handleSignUpSubmit = (e) => {
-    e.preventDefault();
-    if (password !== confirmPassword) {
-      setToast({ show: true, message: 'Passwords do not match.', type: 'danger' });
-      return;
+    if (stepsignup === 2) {
+      if (!email || !businessId) {
+        setToast({
+          show: true,
+          message: 'Please fill out all fields.',
+          type: 'danger',
+        });
+        return;
+      }
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        setToast({
+          show: true,
+          message: 'Please enter a valid email address.',
+          type: 'danger',
+        });
+        return;
+      }
     }
-    employeeSignUp({
-      firstName, lastName, email, password, phone, businessId,businessUid
+  setStepsignup(stepsignup + 1);
+};
+
+const handlePrevioussignup = () => setStepsignup(stepsignup - 1);
+
+const handleLoginSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    await signIn({ email, password });
+  } catch (error) {
+    setToast({ show: true, message: error.message, type: 'danger' });
+  }
+};
+
+const handleCheckRequestSubmit = async (e) => {
+  e.preventDefault();
+  const request = await checkRequest({ email });
+  if (request.request_status === 'approved') {
+    setIsRequestApproved(true);
+    setFirstName(request.first_name);
+    setLastName(request.last_name);
+    setPhone(request.phone);
+    setBusinessId(request.business_id);
+    setBusinessUid(request.business_uid);
+  }
+};
+
+const handleSignUpSubmit = (e) => {
+  e.preventDefault();
+  if (password !== confirmPassword) {
+    setToast({
+      show: true,
+      message: 'Passwords do not match.',
+      type: 'danger',
     });
-  };
+    return;
+  }
+  employeeSignUp({
+    firstName, lastName, email, password, phone, businessId, businessUid
+  });
+};
 
-  const handleNewSignUpSubmit = (e) => {
-    e.preventDefault();
-    newEmployeeSignUp({
-      firstName, lastName, email, phone, businessId
-    });
-  };
+const handleNewSignUpSubmit = (e) => {
+  e.preventDefault();
+  newEmployeeSignUp({
+    firstName,
+    lastName,
+    email,
+    phone,
+    businessId,
+  });
+};
 
-  const closeToast = () => setToast({ ...toast, show: false });
+const closeToast = () => setToast({ ...toast, show: false });
 
-  return (
-    <div className="auth-page">
-      <Toast {...toast} onClose={closeToast} />
+return (
+  <>
+    <div className='main'>
+      <button
+        className='back-anchor-container'
+        onClick={() => {
+          navigate('/rolePage');
+        }}
+      >
+        <i className='bx bx-arrow-back'></i>
+        Back
+      </button>
+      <div className={`wrapper ${formType === 'signUp' ? 'active' : ''}`}>
+        <Toast {...toast} onClose={closeToast} />
+        <span className='rotate-bg'></span>
+        <span className='rotate-bg2'></span>
+        <div className='form-box login'>
+          <form onSubmit={handleLoginSubmit}>
+            {steplogin === 1 && (
+              <>
+                <h2
+                  className='title animation'
+                  style={{ '--i': 1, '--j': 21 }}
+                >
+                  Login
+                </h2>
+                <div
+                  className='input-box animation'
+                  style={{ '--i': 2, '--j': 22 }}
+                >
+                  <input
+                    type='email'
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                  <label>Email</label>
+                  <i className='bx bxs-envelope'></i>
+                </div>
 
-      <div className="container vh-100 d-flex align-items-center justify-content-center">
-        <div className="row w-100">
-          <div className="col-lg-3"></div>
-          <div className="col-lg-6 d-flex align-items-center justify-content-center">
-            <div className="col-lg-8 p-5 form-2-wrapper border shadow-lg">
-              <div className="logo text-center pt-5 mb-4">
-                <img src={logo} height={'75px'} alt="Logo" />
-              </div>
+                <div
+                  className='input-box animation'
+                  style={{ '--i': 3, '--j': 23 }}
+                >
+                  <input
+                    type='password'
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                  <label>Password</label>
+                  <i className='bx bxs-lock-alt'></i>
+                </div>
 
-              <h2 className="text-center mb-4">{formType === 'login' ? 'Log In' : formType === 'checkRequest' ? 'Check Request' : 'Sign Up'}</h2>
+                <button
+                  type='submit'
+                  className='animation manual-btn'
+                  style={{
+                    '--i': 4,
+                    '--j': 24,
+                  }}
+                >
+                  Login
+                </button>
 
-              <div className="position-absolute" style={{ top: '10px', left: '10px' }}>
-                <a href='#' style={{ cursor: 'pointer' }} onClick={() => navigate('/rolePage')}>Back
-                </a>
-              </div>
-
-              {formType === 'login' && (
-                <form onSubmit={handleLoginSubmit}>
-                  <div className="mb-3">
-                    <input
-                      type="email"
-                      className="form-control"
-                      placeholder="Enter Your Email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <input
-                      type="password"
-                      className="form-control"
-                      placeholder="Enter Your Password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                    />
-                  </div>
-                  <div className="d-flex mb-3 justify-content-center">
-                    <button type="submit" className="btn btn-primary w-50">
-                      Log In
-                    </button>
-                  </div>
-                  <div className="d-flex mb-3 justify-content-center">
-                    <span>
-                      Already sent a request?&nbsp;
-                      <a href="#" onClick={(e) => { e.preventDefault(); setFormType('checkRequest'); }}>
-                        Check Request
-                      </a>
-                    </span>
-                  </div>
-                  <div className="d-flex mb-3 justify-content-center">
-                    <span>
-                      Don’t have an account?&nbsp;
-                      <a href="#" onClick={(e) => { e.preventDefault(); setFormType('signUp'); }}>
-                        Create one
-                      </a>
-                    </span>
-                  </div>
-                </form>
-              )}
-
-              {formType === 'checkRequest' && (
-                <>
-                  <form onSubmit={handleCheckRequestSubmit}>
-                    <div className="mb-3">
-                      <input
-                        type="email"
-                        className="form-control"
-                        placeholder="Enter Your Email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)} />
-                    </div>
-                    {!isRequestApproved && (
-                      <div className="d-flex mb-3 justify-content-center">
-                        <button type="submit" className="btn btn-primary w-50">
-                          Check
-                        </button>
-                      </div>
-                    )}
-                  </form>
-                  <form onSubmit={handleSignUpSubmit}>
-                    {isRequestApproved && (
-                      <>
-                        <div className="mb-3">
-                          <input
-                            type="password"
-                            className="form-control"
-                            placeholder="Create Password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)} />
-                        </div>
-                        <div className="mb-3">
-                          <input
-                            type="password"
-                            className="form-control"
-                            placeholder="Confirm Password"
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)} />
-                        </div>
-                        <div className="d-flex mb-3 justify-content-center">
-                          <button type="submit" className="btn btn-primary w-50">
-                            Submit
-                          </button>
-                        </div>
-                      </>
-                    )}
-                  </form>
-                  <div className="d-flex mb-3 justify-content-center">
-                    <span>
-                      <a href="#" onClick={(e) => { e.preventDefault(); setFormType('login'); }} className="text-primary">
-                        Back to Login
-                      </a>
-                    </span>
-                  </div>
-                </>
-              )}
-
-              {formType === 'signUp' && (
-                <form onSubmit={handleNewSignUpSubmit}>
-                  <div className="mb-3">
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder="First Name"
-                      value={firstName}
-                      onChange={(e) => setFirstName(e.target.value)}
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder="Last Name"
-                      value={lastName}
-                      onChange={(e) => setLastName(e.target.value)}
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <input
-                      type="email"
-                      className="form-control"
-                      placeholder="Email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder="Phone Number"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder="Business ID"
-                      value={businessId}
-                      onChange={(e) => setBusinessId(e.target.value)}
-                    />
-                  </div>
-                  <div className="alert fw-light alert-secondary" role="alert">
-                    NOTE: This will only send an approval request to the business having the public id you enter.
-                  </div>
-                  <div className="d-flex mb-3 justify-content-center">
-                    <button type="submit" className="btn btn-primary w-50">
+                <div
+                  className='linkTxt animation'
+                  style={{ '--i': 5, '--j': 25 }}
+                >
+                  <p>
+                    Don't have an account?{' '}
+                    <a
+                      href='#'
+                      className='register-link'
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setFormType('signUp');
+                      }}
+                    >
                       Sign Up
-                    </button>
-                  </div>
-                  <div className="d-flex mb-3 justify-content-center">
-                    <span>
-                      <a href="#" onClick={(e) => { e.preventDefault(); setFormType('login'); }} className="text-primary">
-                        Back to Login
-                      </a>
-                    </span>
-                  </div>
+                    </a>
+                  </p>
+                </div>
+
+                <div
+                  className='linkTxt animation'
+                  style={{ '--i': 6, '--j': 26 }}
+                >
+                  <p>
+                    Already sent a request?&nbsp;
+                    <a
+                      href='#'
+                      className='register-link'
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setFormType('checkRequest');
+                        handleNextlogin(2);
+                      }}
+                    >
+                      Check Request
+                    </a>
+                  </p>
+                </div>
+              </>
+            )}
+          </form>
+
+          {formType === 'checkRequest' && (
+            <>
+              <div className='' style={{ marginTop: 50 }}>
+                <h2 style={{ position: 'relative' }} className='title'>
+                  Check Request
+                </h2>
+                <form onSubmit={handleCheckRequestSubmit}>
+                  {!isRequestApproved && (
+                    <>
+                      <div className='input-box'>
+                        <input
+                          type='email'
+                          required
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                        />
+                        <label>Email</label>
+                        <i className='bx bxs-envelope'></i>
+                      </div>
+                      <button type='submit' className='manual-btn'>
+                        Check
+                      </button>
+
+                      <div className='linkTxt'>
+                        <p>
+                          Already have an account?{' '}
+                          <a
+                            href='#'
+                            className='login-link'
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setFormType('login');
+                              setSteplogin(1);
+                            }}
+                          >
+                            Login
+                          </a>
+                        </p>
+                      </div>
+                    </>
+                  )}
                 </form>
-              )}
-            </div>
+
+                <form onSubmit={handleSignUpSubmit}>
+                  {isRequestApproved && (
+                    <>
+                      <div className='input-box'>
+                        <input
+                          type='email'
+                          required
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                        />
+                        <label>Email</label>
+                        <i className='bx bxs-envelope'></i>
+                      </div>
+
+                      <div className='input-box'>
+                        <input
+                          type='password'
+                          required
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                        />
+                        <label>Password</label>
+                        <i className='bx bxs-lock-alt'></i>
+                      </div>
+
+                      <div className='input-box'>
+                        <input
+                          type='password'
+                          required
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                        />
+                        <label>Confirm Password</label>
+                        <i className='bx bxs-lock-alt'></i>
+                      </div>
+
+                      <button type='submit' className='manual-btn'>
+                        Submit
+                      </button>
+
+                      <div className='linkTxt'>
+                        <p>
+                          Already have an account?{' '}
+                          <a
+                            href='#'
+                            className='login-link'
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setFormType('login');
+                              setSteplogin(1);
+                            }}
+                          >
+                            Login
+                          </a>
+                        </p>
+                      </div>
+                    </>
+                  )}
+                </form>
+              </div>
+            </>
+          )}
+        </div>
+
+        <div className='info-text login'>
+          <div
+            style={{ '--i': 1, '--j': 21, marginLeft: -40, marginTop: -20 }}
+            className='animation'
+          >
+            <img src={logo} height={'90px'} alt='Logo' />
           </div>
+        </div>
+
+        <div className='form-box register'>
+          <h2 className='title animation' style={{ '--i': 17, '--j': 0 }}>
+            Sign Up
+          </h2>
+
+          <form onSubmit={handleNewSignUpSubmit}>
+            {stepsignup === 1 && (
+              <>
+                <div
+                  className='input-box animation'
+                  style={{ '--i': 18, '--j': 1 }}
+                >
+                  <input
+                    type='text'
+                    required
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                  />
+                  <label>First Name</label>
+                  <i className='bx bxs-user'></i>
+                </div>
+
+                <div
+                  className='input-box animation'
+                  style={{ '--i': 19, '--j': 2 }}
+                >
+                  <input
+                    type='text'
+                    required
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                  />
+                  <label>Last Name</label>
+                  <i className='bx bxs-user'></i>
+                </div>
+
+                <div
+                  className='input-box animation'
+                  style={{ '--i': 20, '--j': 3 }}
+                >
+                  <input
+                    type='text'
+                    required
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                  />
+                  <label>Phone</label>
+                  <i className='bx bxs-phone'></i>
+                </div>
+
+                <button
+                  type='button'
+                  className='animation manual-btn'
+                  onClick={handleNextsignup}
+                  style={{
+                    '--i': 21,
+                    '--j': 4,
+                  }}
+                >
+                  Next
+                </button>
+
+                <div
+                  className='linkTxt animation'
+                  style={{ '--i': 22, '--j': 5 }}
+                >
+                  <p>
+                    Already have an account?{' '}
+                    <a
+                      href='#'
+                      className='login-link'
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setFormType('login');
+                      }}
+                    >
+                      Login
+                    </a>
+                  </p>
+                </div>
+              </>
+            )}
+            {stepsignup === 2 && (
+              <>
+                <div
+                  className='input-box animation'
+                  style={{ '--i': 18, '--j': 1 }}
+                >
+                  <input
+                    type='email'
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                  <label>Email</label>
+                  <i className='bx bxs-envelope'></i>
+                </div>
+
+                <div
+                  className='input-box animation'
+                  style={{ '--i': 19, '--j': 2 }}
+                >
+                  <input
+                    type='text'
+                    required
+                    value={businessId}
+                    onChange={(e) => setBusinessId(e.target.value)}
+                  />
+                  <label>Business ID</label>
+                  <i className='bx bxs-lock-alt'></i>
+                </div>
+
+                <div
+                  className='w-300 alert alert-secondary animation'
+                  role='alert'
+                  style={{
+                    '--i': 20,
+                    '--j': 3,
+                    width: 300,
+                    border: 0,
+                    position: 'relative',
+                    left: -13,
+                    padding: 10,
+                    marginBottom: 12,
+                  }}
+                >
+                  NOTE: This will only send an approval request to the
+                  business having the public id you enter.
+                </div>
+
+                <div className='btn btn-div'>
+                  <button
+                    type='button'
+                    className='animation manual-btn'
+                    onClick={handlePrevioussignup}
+                    style={{
+                      '--i': 21,
+                      '--j': 4,
+                      width: 137.5,
+                    }}
+                  >
+                    Back
+                  </button>
+
+                  <button
+                    type='submit'
+                    className='animation manual-btn'
+                    style={{
+                      '--i': 22,
+                      '--j': 5,
+                      width: 137.5,
+                    }}
+                  >
+                    Submit
+                  </button>
+                </div>
+
+                <div
+                  className='linkTxt animation'
+                  style={{ '--i': 23, '--j': 6, marginBottom: 0 }}
+                >
+                  <p>
+                    Already have an account?{' '}
+                    <a
+                      href='#'
+                      className='login-link'
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setFormType('login');
+                      }}
+                    >
+                      Login
+                    </a>
+                  </p>
+                </div>
+              </>
+            )}
+          </form>
+        </div>
+
+        <div className='info-text register'>
+          <h2
+            className='animation'
+            style={{ '--i': 17, '--j': 0, width: 250 }}
+          >
+            Welcome To Dhandho
+          </h2>
+          <p className='animation' style={{ '--i': 18, '--j': 1 }}>
+          </p>
         </div>
       </div>
     </div>
-  );
-}
+  </>
+);
+};
+
+export default EmployeeAuth;

@@ -1,308 +1,591 @@
-import React, { useState } from 'react';
-import { useAuth } from '../components/AuthProvider';
-import { useNavigate, Link } from 'react-router-dom';
-import logo from '../assets/Dhandho.png';
-import Toast from '../components/Toast';
+import React, { useState } from "react";
+import { useAuth } from "./AuthProvider";
+import { useNavigate } from "react-router-dom";
+import logo from "../assets/Dhandho_white.png";
+import Toast from "../components/Toast";
+import "./AuthStyles.css";
+
 
 const BusinessAuth = () => {
     const [step, setStep] = useState(1);
     const [formType, setFormType] = useState('login');
-    const [firstName] = useState('Jane');
-    const [lastName] = useState('Smith');
-    const [email] = useState('jane.smith@gmail.com');
-    const [phone] = useState('2345678901');
-    const [password] = useState('112233');
-    const [confirmPassword] = useState('112233');
-    const [businessName] = useState('Business 2');
-    const [businessEmail] = useState('business2@gmail.com');
-    const [businessContact] = useState('2345678901');
-    const [businessSlogan] = useState('Excellence in Service');
-    const [businessAddress] = useState('456 Elm St, Townsville');
-    
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [email, setEmail] = useState('');
+    const [phone, setPhone] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [businessName, setBusinessName] = useState('');
+    const [businessEmail, setBusinessEmail] = useState('');
+    const [businessContact, setBusinessContact] = useState('');
+    const [businessSlogan, setBusinessSlogan] = useState('');
+    const [businessAddress, setBusinessAddress] = useState('');
     const { businessSignUp, signIn } = useAuth();
     const navigate = useNavigate();
 
-    // Toast state
-    const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
+  // Toast state
+  const [toast, setToast] = useState({
+    show: false,
+    message: "",
+    type: "success",
+  });
 
-    const handleNext = () => {
-        if (step === 1) {
-            if (!firstName || !lastName || !email || !phone) {
-                setToast({ show: true, message: 'Please fill out all fields.', type: 'danger' });
-                return;
-            }
-            // if (password !== confirmPassword) {
-            //     setToast({ show: true, message: 'Passwords do not match.', type: 'danger' });
-            //     return;
-            // }
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email)) {
-                setToast({ show: true, message: 'Please enter a valid email address.', type: 'danger' });
-                return;
-            }
-        }
+  const handleNext = () => {
+    if (step === 1) {
+      if (!firstName || !lastName || !phone) {
+        setToast({
+          show: true,
+          message: "Please fill out all fields.",
+          type: "danger",
+        });
+        return;
+      }
+    }
 
-        if (step === 2) {
-            if (!businessName || !businessContact || !businessEmail) {
-                setToast({ show: true, message: 'Please fill out all business details.', type: 'danger' });
-                return;
-            }
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(businessEmail)) {
-                setToast({ show: true, message: 'Please enter a valid business email address.', type: 'danger' });
-                return;
-            }
-        }
-        setStep(step + 1);
-    };
+    if (step === 2) {
+      if (!email || !password || !confirmPassword) {
+        setToast({
+          show: true,
+          message: "Please fill out all fields.",
+          type: "danger",
+        });
+        return;
+      }
+      if (password !== confirmPassword) {
+        setToast({
+          show: true,
+          message: "Passwords do not match.",
+          type: "danger",
+        });
+        return;
+      }
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        setToast({
+          show: true,
+          message: "Please enter a valid email address.",
+          type: "danger",
+        });
+        return;
+      }
+    }
 
-    const handlePrevious = () => setStep(step - 1);
+    if (step === 3) {
+      if (!businessName || !businessSlogan || !businessEmail) {
+        setToast({
+          show: true,
+          message: "Please fill out all business details.",
+          type: "danger",
+        });
+        return;
+      }
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(businessEmail)) {
+        setToast({
+          show: true,
+          message: "Please enter a valid business email address.",
+          type: "danger",
+        });
+        return;
+      }
+    }
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (formType == 'login') {
-            try {
-                await signIn({ email, password });
-            } catch (error) {
-                setToast({ show: true, message: error.message, type: 'danger' });
-            }
-        }
-        else {
-            try {
-                await businessSignUp({
-                    firstName, lastName, email, password, phone, businessName, businessContact, businessEmail, businessSlogan, businessAddress
-                });
-                setToast({ show: true, message: 'Successfully signed up!', type: 'success' });
-                navigate('/');
-            } catch (error) {
-                setToast({ show: true, message: error.message, type: 'danger' });
-            }
-        }
-    };
+    if (step === 4) {
+      if (!businessContact || !businessAddress) {
+        setToast({
+          show: true,
+          message: "Please fill out all fields.",
+          type: "danger",
+        });
+        return;
+      }
+    }
+    setStep(step + 1);
+  };
 
+  const handlePrevious = () => setStep(step - 1);
 
-    const closeToast = () => setToast({ ...toast, show: false });
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (formType == "login") {
+      try {
+        await signIn({ email, password });
+      } catch (error) {
+        setToast({ show: true, message: error.message, type: "danger" });
+      }
+    } else {
+      try {
+        await businessSignUp({
+          firstName,
+          lastName,
+          email,
+          password,
+          phone,
+          businessName,
+          businessContact,
+          businessEmail,
+          businessSlogan,
+          businessAddress,
+        });
+        setToast({
+          show: true,
+          message: "Successfully signed up!",
+          type: "success",
+        });
+        navigate("/");
+      } catch (error) {
+        setToast({ show: true, message: error.message, type: "danger" });
+      }
+    }
+  };
 
-    return (
-        <div className="auth-page">
-            {/* Toast Component */}
-            <Toast {...toast} onClose={closeToast} />
+  const closeToast = () => setToast({ ...toast, show: false });
 
-            <div className="container vh-100 d-flex align-items-center justify-content-center">
-                <div className="row w-100">
-                    <div className="col-lg-3"></div>
-                    <div className="col-lg-6 d-flex align-items-center justify-content-center">
-                        <div className="col-lg-8 p-5 form-2-wrapper border shadow-lg">
-                            <div className="logo text-center pt-5 mb-4">
-                                <img src={logo} height={'75px'} alt="Logo" />
-                            </div>
-                            <h2 className="text-center mb-4">{formType == 'login' ? 'Log In' : 'Sign Up'}</h2>
-                            <div className="position-absolute" style={{ top: '10px', left: '10px' }}>
-                                <a href='#' style={{ cursor: 'pointer' }} onClick={() => navigate('/rolePage')}>Back
-                                </a>
-                            </div>
-                            {formType == 'login' && (
-                                <>
-                                    <form onSubmit={handleSubmit}>
-                                        <div className="row">
-                                            <div className="mb-3">
-                                                <input
-                                                    type="email"
-                                                    className="form-control"
-                                                    placeholder="Email"
-                                                    value={email}
-                                                    onChange={(e) => setEmail(e.target.value)}
-                                                />
-                                            </div>
-                                            <div className="mb-3">
-                                                <input
-                                                    type="password"
-                                                    className="form-control"
-                                                    placeholder="Password"
-                                                    value={password}
-                                                    onChange={(e) => setPassword(e.target.value)}
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="d-flex mb-3 justify-content-center">
-                                            <button type="submit" className="btn btn-primary">
-                                                Submit
-                                            </button>
-                                        </div>
-                                    </form>
-                                    <div className="d-flex mb-3 justify-content-center">
-                                        <span>
-                                            Don't have an account?&nbsp;
-                                            <a href="#" onClick={(e) => { e.preventDefault(); setFormType('signup'); }}>
-                                                Create one
-                                            </a>
-                                        </span>
-                                    </div>
-                                </>
-                            )}
-                            {formType == 'signup' && (<>
-                                <form onSubmit={handleSubmit}>
-                                    {step === 1 && (
-                                        <>
-                                            <div className="row">
-                                                <div className="mb-3 col-6">
-                                                    <input
-                                                        type="text"
-                                                        className="form-control"
-                                                        placeholder="First Name"
-                                                        value={firstName}
-                                                        onChange={(e) => setFirstName(e.target.value)}
-                                                    />
-                                                </div>
-                                                <div className="mb-3 col-6">
-                                                    <input
-                                                        type="text"
-                                                        className="form-control"
-                                                        placeholder="Last Name"
-                                                        value={lastName}
-                                                        onChange={(e) => setLastName(e.target.value)}
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="mb-3">
-                                                <input
-                                                    type="email"
-                                                    className="form-control"
-                                                    placeholder="Email"
-                                                    value={email}
-                                                    onChange={(e) => setEmail(e.target.value)}
-                                                />
-                                            </div>
-                                            <div className="mb-3">
-                                                <input
-                                                    type="text"
-                                                    className="form-control"
-                                                    placeholder="Phone"
-                                                    value={phone}
-                                                    onChange={(e) => setPhone(e.target.value)}
-                                                />
-                                            </div>
-                                            <div className="mb-3">
-                                                <input
-                                                    type="password"
-                                                    className="form-control"
-                                                    placeholder="Password"
-                                                    value={password}
-                                                    onChange={(e) => setPassword(e.target.value)}
-                                                />
-                                            </div>
-                                            <div className="mb-3">
-                                                <input
-                                                    type="password"
-                                                    className="form-control"
-                                                    placeholder="Confirm Password"
-                                                    value={confirmPassword}
-                                                    onChange={(e) => setConfirmPassword(e.target.value)}
-                                                />
-                                            </div>
-                                            <div className="d-flex justify-content-center">
-                                                <button type="button" className="btn btn-primary" onClick={handleNext}>
-                                                    Next
-                                                </button>
-                                            </div>
-                                        </>
-                                    )}
-                                    {step === 2 && (
-                                        <>
-                                            <>
-                                                <div className="mb-3">
-                                                    <input
-                                                        type="text"
-                                                        className="form-control"
-                                                        placeholder="Business Name"
-                                                        value={businessName}
-                                                        onChange={(e) => setBusinessName(e.target.value)}
-                                                    />
-                                                </div>
-                                                <div className="mb-3">
-                                                    <input
-                                                        type="text"
-                                                        className="form-control"
-                                                        placeholder="Business Slogan"
-                                                        value={businessSlogan}
-                                                        onChange={(e) => setBusinessSlogan(e.target.value)}
-                                                    />
-                                                </div>
-                                                <div className="mb-3">
-                                                    <input
-                                                        type="email"
-                                                        className="form-control"
-                                                        placeholder="Business Email"
-                                                        value={businessEmail}
-                                                        onChange={(e) => setBusinessEmail(e.target.value)}
-                                                    />
-                                                </div>
-                                                <div className="mb-3">
-                                                    <input
-                                                        type="text"
-                                                        className="form-control"
-                                                        placeholder="Business Contact"
-                                                        value={businessContact}
-                                                        onChange={(e) => setBusinessContact(e.target.value)}
-                                                    />
-                                                </div>
-                                                <div className="mb-3">
-                                                    <input
-                                                        type="text"
-                                                        className="form-control"
-                                                        placeholder="Business Address"
-                                                        value={businessAddress}
-                                                        onChange={(e) => setBusinessAddress(e.target.value)}
-                                                    />
-                                                </div>
-                                            </>
-                                            <div className="d-flex justify-content-between">
-                                                <button type="button" className="btn btn-secondary" onClick={handlePrevious}>
-                                                    Back
-                                                </button>
-                                                <button type="button" className="btn btn-primary" onClick={handleNext}>
-                                                    Next
-                                                </button>
-                                            </div>
-                                        </>
-                                    )}
+  return (
+    <>
+      <div className="main">
+        <button
+          className="back-anchor-container"
+          onClick={() => {
+            navigate("/rolePage");
+          }}
+        >
+          <i className="bx bx-arrow-back"></i>
+          Back
+        </button>
+        <div className={`wrapper ${formType === "signup" ? "active" : ""}`}>
+          <Toast {...toast} onClose={closeToast} />
+          <span className="rotate-bg"></span>
+          <span className="rotate-bg2"></span>
+          <div className="form-box login">
+            <h2 className="title animation" style={{ "--i": 1, "--j": 21 }}>
+              Login
+            </h2>
 
-                                    {step === 3 && (
-                                        <>
-                                            <h5 className="text-center mb-4">Review Your Information</h5>
-                                            <p><strong>Name:</strong> {firstName} {lastName}</p>
-                                            <p><strong>Email:</strong> {email}</p>
-                                            <p><strong>Phone:</strong> {phone}</p>
-                                            <p><strong>Business Name:</strong> {businessName}</p>
-                                            <p><strong>Business Email:</strong> {businessEmail}</p>
-                                            <p><strong>Business Contact:</strong> {businessContact}</p>
-                                            <div className="d-flex justify-content-between">
-                                                <button type="button" className="btn btn-secondary" onClick={handlePrevious}>
-                                                    Back
-                                                </button>
-                                                <button type="submit" className="btn btn-primary">
-                                                    Submit
-                                                </button>
-                                            </div>
-                                        </>
-                                    )}
-                                    <div className="d-flex mb-3 justify-content-center">
-                                        <span>
-                                            Already have an account?&nbsp;
-                                            <a href="#" onClick={(e) => { e.preventDefault(); setFormType('login'); }}>
-                                                Log In
-                                            </a>
-                                        </span>
-                                    </div>
-                                </form>
-                            </>
-                            )}
-                        </div>
-                    </div>
-                </div>
+            <form onSubmit={handleSubmit}>
+              <div
+                className="input-box animation"
+                style={{ "--i": 2, "--j": 22 }}
+              >
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+                <label>Email</label>
+                <i className="bx bxs-envelope"></i>
+              </div>
+
+              <div
+                className="input-box animation"
+                style={{ "--i": 3, "--j": 23 }}
+              >
+                <input
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                <label>Password</label>
+                <i className="bx bxs-lock-alt"></i>
+              </div>
+
+              <button type="submit" className="animation manual-btn" style={{ "--i": 4, "--j": 24, }}>
+                Login
+              </button>
+
+              <div
+                className="linkTxt animation"
+                style={{ "--i": 5, "--j": 25 }}
+              >
+                <p>
+                  Don't have an account?{" "}
+                  <a
+                    href="#"
+                    className="register-link"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setFormType("signup");
+                    }}
+                  >
+                    Sign Up
+                  </a>
+                </p>
+              </div>
+            </form>
+          </div>
+
+          <div className="info-text login">
+            <div
+              style={{ "--i": 1, "--j": 21, marginLeft: -40, marginTop: -20 }}
+              className="animation"
+            >
+              <img src={logo} height={"90px"} alt="Logo" />
             </div>
+            <p className="animation" style={{ "--i": 1, "--j": 21 }}>
+            </p>
+          </div>
+
+          <div className="form-box register">
+            <h2 className="title animation" style={{ "--i": 17, "--j": 0 }}>
+              Sign Up
+            </h2>
+
+            <form action="#" onSubmit={handleSubmit}>
+              {step === 1 && (
+                <>
+                  <div //
+                    className="input-box animation"
+                    style={{ "--i": 18, "--j": 1 }}
+                  >
+                    <input
+                      type="text"
+                      required
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                    />
+                    <label>First Name</label>
+                    <i className="bx bxs-user"></i>
+                  </div>
+
+                  <div
+                    className="input-box animation"
+                    style={{ "--i": 19, "--j": 2 }}
+                  >
+                    <input
+                      type="text"
+                      required
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                    />
+                    <label>Last Name</label>
+                    <i className="bx bxs-user"></i>
+                  </div>
+
+                  <div
+                    className="input-box animation"
+                    style={{ "--i": 20, "--j": 3 }}
+                  >
+                    <input
+                      type="text"
+                      required
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                    />
+                    <label>Phone</label>
+                    <i className="bx bxs-phone"></i>
+                  </div>
+
+                  <button
+                    type="button"
+                    className="animation manual-btn"
+                    onClick={handleNext}
+                    style={{
+                      "--i": 21,
+                      "--j": 4,
+                    }}
+                  >
+                    Next
+                  </button>
+
+                  <div
+                    className="linkTxt animation"
+                    style={{ "--i": 22, "--j": 5 }}
+                  >
+                    <p>
+                      Already have an account?{" "}
+                      <a
+                        href="#"
+                        className="login-link"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setFormType("login");
+                        }}
+                      >
+                        Login
+                      </a>
+                    </p>
+                  </div>
+                </>
+              )}
+              {step === 2 && (
+                <>
+                  <div
+                    className="input-box animation"
+                    style={{ "--i": 18, "--j": 1 }}
+                  >
+                    <input
+                      type="email"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
+                    <label>Email</label>
+                    <i className="bx bxs-envelope"></i>
+                  </div>
+
+                  <div
+                    className="input-box animation"
+                    style={{ "--i": 19, "--j": 2 }}
+                  >
+                    <input
+                      type="password"
+                      required
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
+                    <label>Password</label>
+                    <i className="bx bxs-lock-alt"></i>
+                  </div>
+
+                  <div
+                    className="input-box animation"
+                    style={{ "--i": 20, "--j": 3 }}
+                  >
+                    <input
+                      type="password"
+                      required
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                    />
+                    <label>Confirm Password</label>
+                    <i className="bx bxs-lock-alt"></i>
+                  </div>
+                  <div className="btn btn-div">
+                    <button
+                      type="button"
+                      className="animation manual-btn"
+                      onClick={handlePrevious}
+                      style={{
+                        "--i": 21,
+                        "--j": 4,
+                        width: 137.5,
+                      }}
+                    >
+                      Back
+                    </button>
+
+                    <button
+                      type="button"
+                      className="animation manual-btn"
+                      onClick={handleNext}
+                      style={{
+                        "--i": 22,
+                        "--j": 5,
+                        width: 137.5,
+                      }}
+                    >
+                      Next
+                    </button>
+                  </div>
+
+                  <div
+                    className="linkTxt animation"
+                    style={{ "--i": 23, "--j": 6 }}
+                  >
+                    <p>
+                      Already have an account?{" "}
+                      <a
+                        href="#"
+                        className="login-link"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setFormType("login");
+                        }}
+                      >
+                        Login
+                      </a>
+                    </p>
+                  </div>
+                </>
+              )}
+
+              {step === 3 && (
+                <>
+                  <div
+                    className="input-box animation"
+                    style={{ "--i": 18, "--j": 1 }}
+                  >
+                    <input
+                      type="text"
+                      required
+                      value={businessName}
+                      onChange={(e) => setBusinessName(e.target.value)}
+                    />
+                    <label>Business Name</label>
+                    <i className="bx bxs-briefcase"></i>
+                  </div>
+
+                  <div
+                    className="input-box animation"
+                    style={{ "--i": 19, "--j": 2 }}
+                  >
+                    <input
+                      type="text"
+                      required
+                      value={businessSlogan}
+                      onChange={(e) => setBusinessSlogan(e.target.value)}
+                    />
+                    <label>Business Slogan</label>
+                    <i className="bx bxs-lock-alt"></i>
+                  </div>
+
+                  <div
+                    className="input-box animation"
+                    style={{ "--i": 20, "--j": 3 }}
+                  >
+                    <input
+                      type="email"
+                      required
+                      value={businessEmail}
+                      onChange={(e) => setBusinessEmail(e.target.value)}
+                    />
+                    <label>Business Email</label>
+                    <i className="bx bxs-envelope"></i>
+                  </div>
+
+                  <div className="btn btn-div">
+                    <button
+                      type="button"
+                      className="animation manual-btn"
+                      onClick={handlePrevious}
+                      style={{
+                        "--i": 21,
+                        "--j": 4,
+                        width: 137.5,
+                      }}
+                    >
+                      Back
+                    </button>
+
+                    <button
+                      type="button"
+                      className="animation manual-btn"
+                      onClick={handleNext}
+                      style={{
+                        "--i": 22,
+                        "--j": 5,
+                        width: 137.5,
+                      }}
+                    >
+                      Next
+                    </button>
+                  </div>
+                  <div
+                    className="linkTxt animation"
+                    style={{ "--i": 23, "--j": 6 }}
+                  >
+                    <p>
+                      Already have an account?{" "}
+                      <a
+                        href="#"
+                        className="login-link"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setFormType("login");
+                        }}
+                      >
+                        Login
+                      </a>
+                    </p>
+                  </div>
+                </>
+              )}
+
+              {step === 4 && (
+                <>
+                  <div
+                    className="input-box animation"
+                    style={{ "--i": 18, "--j": 1 }}
+                  >
+                    <input
+                      type="text"
+                      required
+                      value={businessContact}
+                      onChange={(e) => setBusinessContact(e.target.value)}
+                    />
+                    <label>Business Contact</label>
+                    <i className="bx bxs-phone"></i>
+                  </div>
+
+                  <div
+                    className="input-box animation"
+                    style={{ "--i": 19, "--j": 2 }}
+                  >
+                    <input
+                      type="text"
+                      required
+                      value={businessAddress}
+                      onChange={(e) => setBusinessAddress(e.target.value)}
+                    />
+                    <label>Business Address</label>
+                    <i className="bx bxs-map"></i>
+                  </div>
+
+                  <div className="btn btn-div">
+                    <button
+                      type="button"
+                      className="animation manual-btn"
+                      onClick={handlePrevious}
+                      style={{
+                        "--i": 20,
+                        "--j": 3,
+                        width: 137.5,
+                      }}
+                    >
+                      Back
+                    </button>
+
+                    <button
+                      type="submit"
+                      className="animation manual-btn"
+                      style={{
+                        "--i": 21,
+                        "--j": 4,
+                        width: 137.5,
+                      }}
+                    >
+                      Submit
+                    </button>
+                  </div>
+                  <div
+                    className="linkTxt animation"
+                    style={{ "--i": 22, "--j": 5 }}
+                  >
+                    <p>
+                      Already have an account?{" "}
+                      <a
+                        href="#"
+                        className="login-link"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setFormType("login");
+                        }}
+                      >
+                        Login
+                      </a>
+                    </p>
+                  </div>
+                </>
+              )}
+            </form>
+          </div>
+
+          <div className="info-text register">
+            <h2
+              className="animation"
+              style={{ "--i": 17, "--j": 0, width: 250 }}
+            >
+              Welcome To Dhandho
+            </h2>
+            <p className="animation" style={{ "--i": 18, "--j": 1 }}>
+            </p>
+          </div>
         </div>
-    );
+      </div>
+    </>
+  );
 };
 
 export default BusinessAuth;

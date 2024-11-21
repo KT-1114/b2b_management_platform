@@ -1,33 +1,44 @@
-import React, { useEffect } from 'react';
+import React, { useEffect } from "react";
 
-const Toast = ({ type = 'success', message, show, onClose, duration = 3000 }) => {
+const Toast = ({
+  type = "success",
+  message,
+  show,
+  onClose,
+  duration = 3000,
+}) => {
   useEffect(() => {
     if (show) {
       const timer = setTimeout(() => {
-        onClose();
+        onClose(); // Automatically close toast after the duration
       }, duration);
 
-      return () => clearTimeout(timer); // Clear the timer when component unmounts or re-renders
+      return () => clearTimeout(timer); // Clean up the timer when component unmounts
     }
   }, [show, duration, onClose]);
 
-  // Bootstrap classes for different toast types
+  // Define toast classes for Bootstrap styling based on type
   const toastClasses = {
-    success: 'bg-success text-white',
-    danger: 'bg-danger text-white',
-    warning: 'bg-warning text-dark',
-    info: 'bg-info text-white'
+    success: "bg-success text-white",
+    danger: "bg-danger text-white",
+    warning: "bg-warning text-dark",
+    info: "bg-info text-white",
   };
 
   return (
     <div
-      className={`toast position-fixed top-50 start-50 translate-middle m-3 ${show ? 'show' : 'hide'}`}
+      className={`toast align-items-center ${
+        show ? "show" : "hide"
+      } position-fixed top-50 start-50 translate-middle m-3`}
       role="alert"
       aria-live="assertive"
       aria-atomic="true"
+      style={{ zIndex: 1050 }} // Optional: Ensures toast appears above other components
     >
       <div className={`toast-header ${toastClasses[type]}`}>
-        <strong className="me-auto">{type.charAt(0).toUpperCase() + type.slice(1)}</strong>
+        <strong className="me-auto">
+          {type.charAt(0).toUpperCase() + type.slice(1)}
+        </strong>
         <button
           type="button"
           className="btn-close"
@@ -35,9 +46,7 @@ const Toast = ({ type = 'success', message, show, onClose, duration = 3000 }) =>
           onClick={onClose}
         ></button>
       </div>
-      <div className="toast-body">
-        {message}
-      </div>
+      <div className="toast-body">{message}</div>
     </div>
   );
 };

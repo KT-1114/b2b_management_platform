@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logo from '../assets/Dhandho.png';
 import Toast from '../components/Toast';
-import './buttons.css';
 import { useAuth } from './AuthProvider';
 
 export default function RolePage() {

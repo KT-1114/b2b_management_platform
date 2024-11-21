@@ -1,8 +1,15 @@
-import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { useAuth } from './AuthProvider';
-import { FaHome, FaBox, FaList, FaSignInAlt, FaWarehouse } from 'react-icons/fa';
-import logo from '../assets/Dhandho_white_crop.png';
+import React, { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { useAuth } from "./AuthProvider";
+import {
+  FaHome,
+  FaBox,
+  FaList,
+  FaSignInAlt,
+  FaWarehouse,
+} from "react-icons/fa";
+import logo from "../assets/Dhandho_white_crop.png";
+// import BusinessSearch from "./BusinessSearch";
 
 function Navbar() {
   const { user, signOut } = useAuth();
@@ -19,17 +26,19 @@ function Navbar() {
     const isHovered = hoveredIndex === path;
 
     return {
-      position: 'relative',
-      color: 'white',
-      textDecoration: 'none',
-      display: 'inline-block',
-      overflow: 'hidden',
-      borderRadius: '0.25rem',
-      transition: 'color 0.3s ease',
-      backgroundColor: isActive || isHovered ? 'rgba(0, 0, 0, 0)' : 'transparent', // Make background transparent to show gradient border
-      boxShadow: isActive || isHovered
-        ? '0 0 1px 2px rgba(223, 91, 211, 0.6), 0 0 2px 4px rgba(126, 91, 246, 0.6)'
-        : 'none',
+      position: "relative",
+      color: "white",
+      textDecoration: "none",
+      display: "inline-block",
+      overflow: "hidden",
+      borderRadius: "0.25rem",
+      transition: "color 0.3s ease",
+      backgroundColor:
+        isActive || isHovered ? "rgba(0, 0, 0, 0)" : "transparent", // Make background transparent to show gradient border
+      boxShadow:
+        isActive || isHovered
+          ? "0 0 1px 2px rgba(223, 91, 211, 0.6), 0 0 2px 4px rgba(126, 91, 246, 0.6)"
+          : "none",
       zIndex: 1, // Ensure the gradient appears above other elements
     };
   };
@@ -37,31 +46,79 @@ function Navbar() {
   return (
     <nav className="navbar navbar-expand navbar-dark border-bottom border-secondary border-5 bg-black">
       <a className="navbar-brand align-items-center" href="#">
-        <img src={logo} height={'25px'} alt="Logo" />
+        <img src={logo} height={"25px"} alt="Logo" />
       </a>
-      <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+      <button
+        className="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarNavAltMarkup"
+        aria-controls="navbarNavAltMarkup"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
         <span className="navbar-toggler-icon"></span>
       </button>
       <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
         <ul className="navbar-nav ml-auto">
-          <li className="nav-item align-items-center me-3 rounded" style={navItemStyle('/')} onMouseEnter={() => setHoveredIndex('/')} onMouseLeave={() => setHoveredIndex(null)}>
+          <li
+            className="nav-item align-items-center me-3 rounded"
+            style={navItemStyle("/")}
+            onMouseEnter={() => setHoveredIndex("/")}
+            onMouseLeave={() => setHoveredIndex(null)}
+          >
             <Link className="nav-link" to="/">
               <FaHome className="me-2" /> Home
             </Link>
           </li>
-          <li className="nav-item align-items-center me-3 rounded" style={navItemStyle('/Products')} onMouseEnter={() => setHoveredIndex('/Products')} onMouseLeave={() => setHoveredIndex(null)}>
+          <li
+            className="nav-item align-items-center me-3 rounded"
+            style={navItemStyle("/Products")}
+            onMouseEnter={() => setHoveredIndex("/Products")}
+            onMouseLeave={() => setHoveredIndex(null)}
+          >
             <Link className="nav-link" to="/Products">
               <FaBox className="me-2" /> Products
             </Link>
           </li>
-          <li className="nav-item align-items-center me-3 rounded" style={navItemStyle('/Orders')} onMouseEnter={() => setHoveredIndex('/Orders')} onMouseLeave={() => setHoveredIndex(null)}>
+          <li
+            className="nav-item align-items-center me-3 rounded"
+            style={navItemStyle("/Orders")}
+            onMouseEnter={() => setHoveredIndex("/Orders")}
+            onMouseLeave={() => setHoveredIndex(null)}
+          >
             <Link className="nav-link" to="/Orders">
               <FaList className="me-2" /> Orders
             </Link>
           </li>
-          <li className="nav-item align-items-center me-3 rounded " style={navItemStyle('/Inventory')} onMouseEnter={() => setHoveredIndex('/Inventory')} onMouseLeave={() => setHoveredIndex(null)}>
+          <li
+            className="nav-item align-items-center me-3 rounded "
+            style={navItemStyle("/Inventory")}
+            onMouseEnter={() => setHoveredIndex("/Inventory")}
+            onMouseLeave={() => setHoveredIndex(null)}
+          >
             <Link className="nav-link" to="/Inventory">
               <FaWarehouse className="me-2" /> Inventory
+            </Link>
+          </li>
+          <li
+            className="nav-item align-items-center me-3 rounded "
+            style={navItemStyle("/Profile")}
+            onMouseEnter={() => setHoveredIndex("/Profile")}
+            onMouseLeave={() => setHoveredIndex(null)}
+          >
+            <Link className="nav-link" to="/Profile">
+              <FaWarehouse className="me-2" /> Profile
+            </Link>
+          </li>
+          <li
+            className="nav-item align-items-center me-3 rounded "
+            style={navItemStyle("/Connections")}
+            onMouseEnter={() => setHoveredIndex("/Connections")}
+            onMouseLeave={() => setHoveredIndex(null)}
+          >
+            <Link className="nav-link" to="/Connections">
+              <FaWarehouse className="me-2" /> Connections
             </Link>
           </li>
         </ul>
@@ -76,6 +133,7 @@ function Navbar() {
           </>
         )}
       </div>
+      <div>{/* <BusinessSearch /> */}</div>
     </nav>
   );
 }

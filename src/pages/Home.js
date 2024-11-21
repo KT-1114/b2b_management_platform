@@ -1,27 +1,52 @@
-import React from 'react';
-import '../components/buttons.css';
+import React, { useEffect, useState } from 'react';
+import { useAuth } from '../components/AuthProvider';
 
 export default function Home() {
+  const {user} = useAuth();
+
+
+  // Fetch data from Supabase table 'businesses'
+  // useEffect(() => {
+  //   const fetchBusinesses = async () => {
+  //     const { data, error } = await supabase  
+  //       .from('businesses')
+  //       .select('*');
+
+  //     if (error) {
+  //       console.error('Error fetching businesses:', error);
+  //     } else {
+  //       setBusinesses(data);
+  //     }
+  //     setLoading(false);
+  //   };
+
+  //   fetchBusinesses();
+  // }, []);
+
   const features = [
     {
       title: 'Place Orders',
       description: 'Easily place and manage your orders with a few clicks.',
       icon: '🛒',
+      route: '/place-orders', // Add a route for each feature
     },
     {
       title: 'Manage Inventory',
       description: 'Keep track of your stock levels and update items efficiently.',
       icon: '📦',
+      route: '/manage-inventory',
     },
     {
       title: 'Sell',
       description: 'Manage your sales process and monitor performance.',
       icon: '💰',
+      route: '/sell',
     },
     {
       title: 'Manage Employees',
       description: 'Organize and manage your team effectively.',
       icon: '👥',
+      route: '/manage-employees', // Add route for managing employees
     },
   ];
 
