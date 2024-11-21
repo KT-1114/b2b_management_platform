@@ -4,24 +4,24 @@ import { useNavigate } from "react-router-dom";
 import logo from "../assets/Dhandho_white.png";
 import Toast from "../components/Toast";
 import "./AuthStyles.css";
-
+import { HiSpeakerphone } from "react-icons/hi";
 
 const BusinessAuth = () => {
-    const [step, setStep] = useState(1);
-    const [formType, setFormType] = useState('login');
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
-    const [email, setEmail] = useState('');
-    const [phone, setPhone] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [businessName, setBusinessName] = useState('');
-    const [businessEmail, setBusinessEmail] = useState('');
-    const [businessContact, setBusinessContact] = useState('');
-    const [businessSlogan, setBusinessSlogan] = useState('');
-    const [businessAddress, setBusinessAddress] = useState('');
-    const { businessSignUp, signIn } = useAuth();
-    const navigate = useNavigate();
+  const [step, setStep] = useState(1);
+  const [formType, setFormType] = useState("login");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [businessName, setBusinessName] = useState("");
+  const [businessEmail, setBusinessEmail] = useState("");
+  const [businessContact, setBusinessContact] = useState("");
+  const [businessSlogan, setBusinessSlogan] = useState("");
+  const [businessAddress, setBusinessAddress] = useState("");
+  const { businessSignUp, signIn } = useAuth();
+  const navigate = useNavigate();
 
   // Toast state
   const [toast, setToast] = useState({
@@ -191,7 +191,14 @@ const BusinessAuth = () => {
                 <i className="bx bxs-lock-alt"></i>
               </div>
 
-              <button type="submit" className="animation manual-btn" style={{ "--i": 4, "--j": 24, }}>
+              <button
+                type="submit"
+                className="animation manual-btn"
+                style={{
+                  "--i": 4,
+                  "--j": 24,
+                }}
+              >
                 Login
               </button>
 
@@ -221,10 +228,10 @@ const BusinessAuth = () => {
               style={{ "--i": 1, "--j": 21, marginLeft: -40, marginTop: -20 }}
               className="animation"
             >
+              <h2>Welcome Back To</h2>
               <img src={logo} height={"90px"} alt="Logo" />
             </div>
-            <p className="animation" style={{ "--i": 1, "--j": 21 }}>
-            </p>
+            <p className="animation" style={{ "--i": 1, "--j": 21 }}></p>
           </div>
 
           <div className="form-box register">
@@ -428,7 +435,9 @@ const BusinessAuth = () => {
                       onChange={(e) => setBusinessSlogan(e.target.value)}
                     />
                     <label>Business Slogan</label>
-                    <i className="bx bxs-lock-alt"></i>
+                    <i>
+                      <HiSpeakerphone />
+                    </i>
                   </div>
 
                   <div
@@ -577,10 +586,10 @@ const BusinessAuth = () => {
               className="animation"
               style={{ "--i": 17, "--j": 0, width: 250 }}
             >
-              Welcome To Dhandho
+              Welcome To
+              <img src={logo} height={"90px"} alt="Logo" />
             </h2>
-            <p className="animation" style={{ "--i": 18, "--j": 1 }}>
-            </p>
+            <p className="animation" style={{ "--i": 18, "--j": 1 }}></p>
           </div>
         </div>
       </div>

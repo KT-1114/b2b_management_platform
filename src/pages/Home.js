@@ -5,20 +5,18 @@ import supabase from '../supabaseClient';
 
 export default function Home() {
   const { user, userBusinessData } = useAuth();
+  const [businessRelations, setBusinessRelations] = useState([]);
+  const [connectedBusinesses, setConnectedBusinesses] = useState(new Set());
   const [sellersCount, setSellersCount] = useState(0);
   const [customersCount, setCustomersCount] = useState(0);
   const [employeeCount, setEmployeeCount] = useState(0);  // To store the employee count
   const [orders, setOrders] = useState([]);  // To store the orders
+  const [userNames, setUserNames] = useState({});  // Store the user names for placed_by IDs
 
-  // State for business relations
-  const [businessRelations, setBusinessRelations] = useState([]);
-  const [connectedBusinesses, setConnectedBusinesses] = useState(new Set());
-
-  // Function to fetch business relations and update counts
+  // Fetch business relations and update counts
   const fetchBusinessRelations = async () => {
     if (!user || !userBusinessData) return;
 
-    // Fetch business relations
     const { data, error } = await supabase
       .from('business_relations')
       .select(`
@@ -33,7 +31,6 @@ export default function Home() {
 
     if (error) {
       console.error('Error fetching business relations:', error.message);
-      // Handle the error as necessary
     }
 
     if (data) {
@@ -45,23 +42,18 @@ export default function Home() {
       // Determine unique customers and sellers
       data.forEach(relation => {
         if (relation.business_uid_1 === userBusinessData.business_uid) {
-          // business_uid_1 is the customer
-          sellers.add(relation.business_uid_2);  // Add seller (business_uid_2)
+          sellers.add(relation.business_uid_2);
         } else {
-          // business_uid_2 is the customer
-          customers.add(relation.business_uid_1);  // Add seller (business_uid_1)
+          customers.add(relation.business_uid_1);
         }
       });
 
-      setCustomersCount(customers.size);  // Unique customers
-      setSellersCount(sellers.size);      // Unique sellers (you can adjust this logic based on your relation type)
-
-      // Set connected businesses for additional use (if needed)
-      setConnectedBusinesses(customers);
+      setCustomersCount(customers.size);
+      setSellersCount(sellers.size);
     }
   };
 
-  // Function to fetch employee count
+  // Fetch employee count
   const fetchEmployeeCount = async () => {
     if (!user || !userBusinessData) return;
 
@@ -75,34 +67,67 @@ export default function Home() {
     }
 
     if (data) {
-      setEmployeeCount(data.length);  // Set the employee count
+      setEmployeeCount(data.length);
     }
   };
 
-  // Function to fetch orders associated with the user's business
+  // Fetch orders associated with the user's business and fetch user names separately
   const fetchOrders = async () => {
     if (!user || !userBusinessData) return;
 
     const { data, error } = await supabase
       .from('orders')
-      .select('order_id, created_at, from_store, to_store, amount, placed_by')
+      .select(`
+        order_id, 
+        created_at, 
+        from_store, 
+        to_store,
+        amount, 
+        from_store:businesses!from_store(business_name), 
+        to_store:businesses!to_store(business_name),
+        placed_by
+      `)
       .or(`from_store.eq.${userBusinessData.business_uid},to_store.eq.${userBusinessData.business_uid}`)
-      .order('created_at', { ascending: false });  // Fetch orders in descending order of created_at
+      .order('created_at', { ascending: false });
 
     if (error) {
       console.error('Error fetching orders:', error.message);
     }
 
     if (data) {
-      setOrders(data);  // Store the fetched orders in state
+      setOrders(data);
+
+      // Now, fetch user names of all users who placed orders
+      const placedByIds = [...new Set(data.map(order => order.placed_by))]; // Extract unique user IDs
+      fetchUserNames(placedByIds);
+    }
+  };
+
+  // Function to fetch user names from profiles table
+  const fetchUserNames = async (userIds) => {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('id, name')
+      .in('id', userIds);  // Get user names for the given user IDs
+
+    if (error) {
+      console.error('Error fetching user names:', error.message);
+    }
+
+    if (data) {
+      const names = {};
+      data.forEach(user => {
+        names[user.id] = user.name;  // Map user ID to name
+      });
+      setUserNames(names);  // Update state with the user names
     }
   };
 
   useEffect(() => {
-    fetchBusinessRelations();  // Fetch business relations
-    fetchEmployeeCount();  // Fetch employee count
-    fetchOrders();  // Fetch orders
-  }, [user, userBusinessData]);  // Re-run the fetch whenever user or business data changes
+    fetchBusinessRelations();
+    fetchEmployeeCount();
+    fetchOrders();
+  }, [user, userBusinessData]);
 
   // Function to format date and time
   const formatDateTime = (dateString) => {
@@ -130,18 +155,6 @@ export default function Home() {
       description: 'Keep track of your stock levels and update items efficiently.',
       icon: '📦',
       route: '/inventory',
-    },
-    {
-      title: 'Sell',
-      description: 'Manage your sales process and monitor performance.',
-      icon: '💰',
-      route: '/sell',
-    },
-    {
-      title: 'Manage Employees',
-      description: 'Organize and manage your team effectively.',
-      icon: '👥',
-      route: '/manage-employees',
     },
   ];
 
@@ -199,9 +212,9 @@ export default function Home() {
           <tr>
             <th>Date & Time</th>
             <th>Amount</th>
-            <th>Placed By</th>
             <th>From Store</th>
             <th>To Store</th>
+            <th>Placed By</th>
           </tr>
         </thead>
         <tbody>
@@ -209,9 +222,9 @@ export default function Home() {
             <tr key={index}>
               <td>{formatDateTime(order.created_at)}</td>
               <td>{order.amount}</td>
-              <td>{order.placed_by}</td>
-              <td>{order.from_store}</td>
-              <td>{order.to_store}</td>
+              <td>{order.from_store.business_name}</td>
+              <td>{order.to_store.business_name}</td>
+              <td>{userNames[order.placed_by] || 'Unknown'}</td> {/* User Name from profiles */}
             </tr>
           ))}
         </tbody>

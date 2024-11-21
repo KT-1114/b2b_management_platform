@@ -9,6 +9,7 @@ const Orders = () => {
   const { userBusinessData } = useAuth();
   const [fromOrders, setFromOrders] = useState([]);
   const [toOrders, setToOrders] = useState([]);
+  const [userNames, setUserNames] = useState({}); // Store user names by UUID
   const [toast, setToast] = useState({ type: "", message: "", show: false });
 
   // Fetch Orders where the user’s business is `from_store` or `to_store`
@@ -18,7 +19,7 @@ const Orders = () => {
         // Fetch orders where the business is `from_store`
         const { data: fromData, error: fromError } = await supabase
           .from("orders")
-          .select("*, from_store (business_name), to_store (business_name)")
+          .select("*, from_store (business_name), to_store (business_name), placed_by")
           .eq("from_store", userBusinessData.business_uid);
 
         if (fromError) throw fromError;
@@ -27,11 +28,35 @@ const Orders = () => {
         // Fetch orders where the business is `to_store`
         const { data: toData, error: toError } = await supabase
           .from("orders")
-          .select("*, from_store (business_name), to_store (business_name)")
+          .select("*, from_store (business_name), to_store (business_name), placed_by")
           .eq("to_store", userBusinessData.business_uid);
 
         if (toError) throw toError;
         setToOrders(toData);
+
+        // Get all unique placed_by UUIDs from both order arrays
+        const placedByUUIDs = [
+          ...new Set([
+            ...fromData.map((order) => order.placed_by),
+            ...toData.map((order) => order.placed_by),
+          ]),
+        ];
+
+        // Fetch user names from the 'profiles' table using the placed_by UUIDs
+        const { data: profiles, error: profilesError } = await supabase
+          .from('profiles')  // This is the Supabase 'profiles' table
+          .select('id, name')
+          .in('id', placedByUUIDs);  // Use the 'id' column (UUID) from the 'profiles' table
+
+        if (profilesError) throw profilesError;
+
+        // Map the user names by UUID
+        const userNameMap = profiles.reduce((acc, profile) => {
+          acc[profile.id] = profile.name;  // Map UUID to name
+          return acc;
+        }, {});
+
+        setUserNames(userNameMap);  // Store the names in state
       } catch (error) {
         console.error("Error fetching orders:", error.message);
         setToast({
@@ -57,13 +82,21 @@ const Orders = () => {
     <div className="container mt-5">
       {/* Toast Notifications */}
       {toast.show && (
-        <Toast type={toast.type} message={toast.message} show={toast.show} onClose={() => setToast({ ...toast, show: false })} />
+        <Toast
+          type={toast.type}
+          message={toast.message}
+          show={toast.show}
+          onClose={() => setToast({ ...toast, show: false })}
+        />
       )}
 
       <h2>Orders</h2>
 
       {/* Floating Action Button */}
-      <div className="position-fixed bottom-0 end-0 m-4 d-flex flex-column align-items-center" style={{ zIndex: 1050 }}>
+      <div
+        className="position-fixed bottom-0 end-0 m-4 d-flex flex-column align-items-center"
+        style={{ zIndex: 1050 }}
+      >
         <button
           className="btn btn-dark rounded-circle p-3 mb-3 shadow-lg"
           style={{ transition: "transform 0.3s ease-in-out" }}
@@ -96,7 +129,7 @@ const Orders = () => {
                   <td>{order.from_store.business_name}</td>
                   <td>{order.to_store.business_name}</td>
                   <td>{order.amount.toFixed(2)}</td>
-                  <td>{order.placed_by.email}</td>
+                  <td>{userNames[order.placed_by]}</td> {/* Display user name */}
                 </tr>
               ))
             ) : (
@@ -131,7 +164,7 @@ const Orders = () => {
                   <td>{order.from_store.business_name}</td>
                   <td>{order.to_store.business_name}</td>
                   <td>{order.amount.toFixed(2)}</td>
-                  <td>{order.placed_by.email}</td>
+                  <td>{userNames[order.placed_by]}</td> {/* Display user name */}
                 </tr>
               ))
             ) : (
