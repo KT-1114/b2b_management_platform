@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";  // Import useNavigate hook
+import { useNavigate, Link } from "react-router-dom";  // Import Link component for routing
 import supabase from "../supabaseClient";
 import { useAuth } from "../components/AuthProvider";
 import Toast from "../components/Toast";
 
 const Orders = () => {
-  const navigate = useNavigate();  // Initialize navigate hook
+  const navigate = useNavigate();
   const { userBusinessData } = useAuth();
   const [fromOrders, setFromOrders] = useState([]);
   const [toOrders, setToOrders] = useState([]);
-  const [userNames, setUserNames] = useState({}); // Store user names by UUID
+  const [userNames, setUserNames] = useState({});
   const [toast, setToast] = useState({ type: "", message: "", show: false });
 
   // Fetch Orders where the user’s business is `from_store` or `to_store`
@@ -44,9 +44,9 @@ const Orders = () => {
 
         // Fetch user names from the 'profiles' table using the placed_by UUIDs
         const { data: profiles, error: profilesError } = await supabase
-          .from('profiles')  // This is the Supabase 'profiles' table
-          .select('id, name')
-          .in('id', placedByUUIDs);  // Use the 'id' column (UUID) from the 'profiles' table
+          .from("profiles")
+          .select("id, name")
+          .in("id", placedByUUIDs);
 
         if (profilesError) throw profilesError;
 
@@ -75,7 +75,7 @@ const Orders = () => {
 
   // Handle + button click for navigation
   const handleAddOrderClick = () => {
-    navigate("/place-order");  // Redirect to "Place Order" page
+    navigate("/place-order");
   };
 
   return (
@@ -124,7 +124,12 @@ const Orders = () => {
             {fromOrders.length > 0 ? (
               fromOrders.map((order) => (
                 <tr key={order.order_id}>
-                  <td>{order.order_id}</td>
+                  <td>
+                    {/* Link to OrderDetails page */}
+                    <Link to={`/order/${order.order_id}`}>
+                      {order.order_id}
+                    </Link>
+                  </td>
                   <td>{new Date(order.created_at).toLocaleString()}</td>
                   <td>{order.from_store.business_name}</td>
                   <td>{order.to_store.business_name}</td>
@@ -159,7 +164,12 @@ const Orders = () => {
             {toOrders.length > 0 ? (
               toOrders.map((order) => (
                 <tr key={order.order_id}>
-                  <td>{order.order_id}</td>
+                  <td>
+                    {/* Link to OrderDetails page */}
+                    <Link to={`/order/${order.order_id}`}>
+                      {order.order_id}
+                    </Link>
+                  </td>
                   <td>{new Date(order.created_at).toLocaleString()}</td>
                   <td>{order.from_store.business_name}</td>
                   <td>{order.to_store.business_name}</td>

@@ -95,16 +95,6 @@ function Navbar() {
           </li>
           <li
             className="nav-item align-items-center me-3 rounded "
-            style={navItemStyle("/Inventory")}
-            onMouseEnter={() => setHoveredIndex("/Inventory")}
-            onMouseLeave={() => setHoveredIndex(null)}
-          >
-            <Link className="nav-link" to="/Inventory">
-              <MdInventory className="me-2" /> Inventory
-            </Link>
-          </li>
-          <li
-            className="nav-item align-items-center me-3 rounded "
             style={navItemStyle("/Connections")}
             onMouseEnter={() => setHoveredIndex("/Connections")}
             onMouseLeave={() => setHoveredIndex(null)}
