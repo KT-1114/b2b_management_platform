@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import logo from '../assets/Dhandho.png';
 import Toast from '../components/Toast';
 import { useAuth } from './AuthProvider';
+import './button.css'
 
 export default function RolePage() {
     const navigate = useNavigate();
@@ -36,10 +37,10 @@ export default function RolePage() {
                                     <img src={logo} height={'75px'} alt="Logo" />
                                 </div>
                                 <div className="row">
-                                    <div className='btn btn-link mb-3' onClick={handleEmployeeClick}>
+                                    <div className='btn cst-btn-link mb-3' onClick={handleEmployeeClick}>
                                         I am an Employee
                                     </div>
-                                    <div className='btn btn-link' onClick={handleBusinessClick}>
+                                    <div className='btn cst-btn-link' onClick={handleBusinessClick}>
                                         I am an Owner
                                     </div>
                                 </div>

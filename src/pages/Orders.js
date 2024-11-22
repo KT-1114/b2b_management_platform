@@ -1,8 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";  // Import Link component for routing
+import { useNavigate, Link } from "react-router-dom"; // Import Link component for routing
 import supabase from "../supabaseClient";
 import { useAuth } from "../components/AuthProvider";
 import Toast from "../components/Toast";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+} from "@mui/material";
 
 const Orders = () => {
   const navigate = useNavigate();
@@ -19,7 +26,9 @@ const Orders = () => {
         // Fetch orders where the business is `from_store`
         const { data: fromData, error: fromError } = await supabase
           .from("orders")
-          .select("*, from_store (business_name), to_store (business_name), placed_by")
+          .select(
+            "*, from_store (business_name), to_store (business_name), placed_by"
+          )
           .eq("from_store", userBusinessData.business_uid);
 
         if (fromError) throw fromError;
@@ -28,7 +37,9 @@ const Orders = () => {
         // Fetch orders where the business is `to_store`
         const { data: toData, error: toError } = await supabase
           .from("orders")
-          .select("*, from_store (business_name), to_store (business_name), placed_by")
+          .select(
+            "*, from_store (business_name), to_store (business_name), placed_by"
+          )
           .eq("to_store", userBusinessData.business_uid);
 
         if (toError) throw toError;
@@ -52,11 +63,11 @@ const Orders = () => {
 
         // Map the user names by UUID
         const userNameMap = profiles.reduce((acc, profile) => {
-          acc[profile.id] = profile.name;  // Map UUID to name
+          acc[profile.id] = profile.name; // Map UUID to name
           return acc;
         }, {});
 
-        setUserNames(userNameMap);  // Store the names in state
+        setUserNames(userNameMap); // Store the names in state
       } catch (error) {
         console.error("Error fetching orders:", error.message);
         setToast({
@@ -78,8 +89,12 @@ const Orders = () => {
     navigate("/place-order");
   };
 
+  const handleRowClick = (orderId) => {
+    navigate(`/order/${orderId}`); // Navigate to the order details page
+  };
+
   return (
-    <div className="container mt-5">
+    <div className="container mt-4">
       {/* Toast Notifications */}
       {toast.show && (
         <Toast
@@ -90,7 +105,7 @@ const Orders = () => {
         />
       )}
 
-      <h2>Orders</h2>
+      <h2 className="text-danger-emphasis mb-4 fw-bold">Orders</h2>
 
       {/* Floating Action Button */}
       <div
@@ -100,7 +115,7 @@ const Orders = () => {
         <button
           className="btn btn-dark rounded-circle p-3 mb-3 shadow-lg"
           style={{ transition: "transform 0.3s ease-in-out" }}
-          onClick={handleAddOrderClick}  // On click, redirect to the Place Order page
+          onClick={handleAddOrderClick} // On click, redirect to the Place Order page
         >
           <i className="bx bx-plus" style={{ fontSize: "30px" }}></i>
         </button>
@@ -108,83 +123,96 @@ const Orders = () => {
 
       {/* From Store Orders Table */}
       <div className="mb-4">
-        <h4>Orders from Your Store</h4>
-        <table className="table table-bordered table-hover table-striped">
-          <thead className="bg-primary text-white">
-            <tr>
-              <th>Order ID</th>
-              <th>Created At</th>
-              <th>From Store</th>
-              <th>To Store</th>
-              <th>Amount</th>
-              <th>Placed By</th>
-            </tr>
-          </thead>
-          <tbody>
-            {fromOrders.length > 0 ? (
-              fromOrders.map((order) => (
-                <tr key={order.order_id}>
-                  <td>
-                    {/* Link to OrderDetails page */}
-                    <Link to={`/order/${order.order_id}`}>
-                      {order.order_id}
-                    </Link>
-                  </td>
-                  <td>{new Date(order.created_at).toLocaleString()}</td>
-                  <td>{order.from_store.business_name}</td>
-                  <td>{order.to_store.business_name}</td>
-                  <td>{order.amount.toFixed(2)}</td>
-                  <td>{userNames[order.placed_by]}</td> {/* Display user name */}
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="6" className="text-center">No orders found.</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+  <h4>Orders from Your Store</h4>
+  <style>
+    {`
+      .order-row:hover {
+        background-color: #f1f1f1; /* Light gray background on hover */
+        transition: background-color 0.3s ease; /* Smooth transition */
+      }
+    `}
+  </style>
+  <Table className="bg-light rounded shadow-lg">
+    <TableHead className="bg-black">
+      <TableRow>
+        <TableCell style={{ color: "white" }}>Order ID</TableCell>
+        <TableCell style={{ color: "white" }}>Created At</TableCell>
+        <TableCell style={{ color: "white" }}>To Store</TableCell>
+        <TableCell style={{ color: "white" }}>Amount</TableCell>
+        <TableCell style={{ color: "white" }}>Placed By</TableCell>
+      </TableRow>
+    </TableHead>
+    <TableBody>
+      {fromOrders.length > 0 ? (
+        fromOrders.map((order) => (
+          <TableRow
+            key={order.order_id}
+            className="cursor-pointer order-row" // Apply the hover class here
+            onClick={() => handleRowClick(order.order_id)}
+          >
+            <TableCell>{order.order_id}</TableCell>
+            <TableCell>{new Date(order.created_at).toLocaleString()}</TableCell>
+            <TableCell>{order.to_store.business_name}</TableCell>
+            <TableCell>{order.amount.toFixed(2)}</TableCell>
+            <TableCell>{userNames[order.placed_by]}</TableCell>
+          </TableRow>
+        ))
+      ) : (
+        <TableRow>
+          <TableCell colSpan="6" className="text-center">
+            No orders found.
+          </TableCell>
+        </TableRow>
+      )}
+    </TableBody>
+  </Table>
+</div>
 
-      {/* To Store Orders Table */}
-      <div className="mb-4">
-        <h4>Orders to Your Store</h4>
-        <table className="table table-bordered table-hover table-striped">
-          <thead className="bg-success text-white">
-            <tr>
-              <th>Order ID</th>
-              <th>Created At</th>
-              <th>From Store</th>
-              <th>To Store</th>
-              <th>Amount</th>
-              <th>Placed By</th>
-            </tr>
-          </thead>
-          <tbody>
-            {toOrders.length > 0 ? (
-              toOrders.map((order) => (
-                <tr key={order.order_id}>
-                  <td>
-                    {/* Link to OrderDetails page */}
-                    <Link to={`/order/${order.order_id}`}>
-                      {order.order_id}
-                    </Link>
-                  </td>
-                  <td>{new Date(order.created_at).toLocaleString()}</td>
-                  <td>{order.from_store.business_name}</td>
-                  <td>{order.to_store.business_name}</td>
-                  <td>{order.amount.toFixed(2)}</td>
-                  <td>{userNames[order.placed_by]}</td> {/* Display user name */}
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="6" className="text-center">No orders found.</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+{/* To Store Orders Table */}
+<div className="mb-4">
+  <style>
+    {`
+      .order-row:hover {
+        background-color: #e0e0e0; /* Light gray background on hover */
+        transition: background-color 0.3s ease; /* Smooth transition */
+      }
+    `}
+  </style>
+  <Table className="bg-light rounded shadow-lg">
+    <TableHead className="bg-black">
+      <TableRow>
+        <TableCell style={{ color: "white" }}>Order ID</TableCell>
+        <TableCell style={{ color: "white" }}>Created At</TableCell>
+        <TableCell style={{ color: "white" }}>From Store</TableCell>
+        <TableCell style={{ color: "white" }}>Amount</TableCell>
+        <TableCell style={{ color: "white" }}>Placed By</TableCell>
+      </TableRow>
+    </TableHead>
+    <TableBody>
+      {toOrders.length > 0 ? (
+        toOrders.map((order) => (
+          <TableRow
+            key={order.order_id}
+            className="cursor-pointer order-row" // Apply the hover class here
+            onClick={() => handleRowClick(order.order_id)}
+          >
+            <TableCell>{order.order_id}</TableCell>
+            <TableCell>{new Date(order.created_at).toLocaleString()}</TableCell>
+            <TableCell>{order.from_store.business_name}</TableCell>
+            <TableCell>{order.amount.toFixed(2)}</TableCell>
+            <TableCell>{userNames[order.placed_by]}</TableCell>
+          </TableRow>
+        ))
+      ) : (
+        <TableRow>
+          <TableCell colSpan="6" className="text-center">
+            No orders found.
+          </TableCell>
+        </TableRow>
+      )}
+    </TableBody>
+  </Table>
+</div>
     </div>
   );
 };

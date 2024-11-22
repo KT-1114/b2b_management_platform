@@ -108,7 +108,7 @@ function Navbar() {
       <div className="d-flex align-items-center ml-auto">
         {user && (
           <>
-            <span className="text-white">{user.email}</span>
+            <span className="text-white">{user.user_metadata.first_name} { user.user_metadata.last_name}</span>
             <button className="btn text-white" onClick={handleLogout}>
               <FaSignInAlt className="me-2" />
             </button>

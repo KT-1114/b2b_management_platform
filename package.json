@@ -1,4 +1,11 @@
 {
+  "name": "b2b-management",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@babel/preset-env": "^7.25.4",
@@ -8,6 +15,7 @@
     "cross-env": "^7.0.3",
     "css-loader": "^7.1.2",
     "electron": "^32.0.1",
+    "electron-builder": "^24.6.1",
     "electron-reload": "^2.0.0-alpha.1",
     "file-loader": "^6.2.0",
     "html-webpack-plugin": "^5.6.0",
@@ -16,13 +24,6 @@
     "webpack": "^5.94.0",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^5.0.4"
-  },
-  "scripts": {
-    "dev": "concurrently \"npm run react-start\" \"wait-on http://localhost:9000 && npm run electron-start\"",
-    "react-start": "webpack serve --mode development",
-    "build": "webpack --mode production",
-    "electron-start": "cross-env NODE_ENV=development electron .",
-    "start": "npm run build && electron ."
   },
   "dependencies": {
     "@emotion/react": "^11.13.3",
@@ -40,11 +41,38 @@
     "react-router-dom": "^6.26.1",
     "react-select": "^5.8.3"
   },
-  "name": "b2b-management",
-  "version": "1.0.0",
-  "main": "main.js",
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": ""
+  "scripts": {
+    "dev": "concurrently \"npm run react-start\" \"wait-on http://localhost:9000 && npm run electron-start\"",
+    "react-start": "webpack serve --mode development",
+    "build": "webpack --mode production",
+    "electron-start": "cross-env NODE_ENV=development electron .",
+    "start": "npm run build && electron .",
+    "dist": "npm run build && electron-builder"
+  },
+  "build": {
+  "appId": "com.example.b2b-management",
+  "productName": "B2B Management",
+  "files": [
+    "build/**/*",          
+    "main.js",             
+    "node_modules/**/*"    
+  ],
+  "directories": {
+    "output": "dist"       
+  },
+  "win": {
+    "target": [
+      "nsis",              
+      "zip"                
+    ],
+    "icon": "src/assets/icon.ico"
+  },
+  "nsis": {
+    "oneClick": false,      
+    "perMachine": true,     
+    "allowElevation": true, 
+    "createDesktopShortcut": true
+  }
+}
+
 }

@@ -16,6 +16,7 @@ import { ContextProvider } from './components/UserContext';
 import Connections from './pages/Connections';
 import PlaceOrder from './pages/PlaceOrder';
 import OrderDetails from './components/OrderDetails';
+import BusinessDetails from './components/BusinessDetails';
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
             <Route path="/profile" element={<ProtectedRoute><><Navbar /><Profile /></></ProtectedRoute>} />
             <Route path="/place-order" element={<ProtectedRoute><><Navbar /><PlaceOrder /></></ProtectedRoute>} />
             <Route path="/order/:orderId" element={<ProtectedRoute><><Navbar /><OrderDetails /></></ProtectedRoute>} />
+            <Route path="/business/:businessUid" element={<ProtectedRoute><><Navbar /><BusinessDetails /></></ProtectedRoute>} />
           </Routes>
         </ContextProvider>
       </AuthProvider>

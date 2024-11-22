@@ -2,6 +2,14 @@ import React, { useState, useEffect } from "react";
 import supabase from "../supabaseClient";
 import { useAuth } from "../components/AuthProvider";
 import Toast from "../components/Toast";
+import { useNavigate } from "react-router-dom";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+} from "@mui/material";
 
 const Connections = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -14,6 +22,7 @@ const Connections = () => {
   const [sentRequests, setSentRequests] = useState([]);
   const [receivedRequests, setReceivedRequests] = useState([]);
   const [showPendingModal, setShowPendingModal] = useState(false);
+  const navigate = useNavigate(); // Initialize the navigate function
 
   useEffect(() => {
     const fetchBusinessRelations = async () => {
@@ -56,15 +65,15 @@ const Connections = () => {
       const { data, error } = await supabase
         .from('business_requests')
         .select(`
-          request_id,
-          from_business_uid,
-          to_business_uid,
-          request_status,
-          created_at,
-          relation_type,
-          business_from:businesses!from_business_uid(business_name),
-          business_to:businesses!to_business_uid(business_name)
-        `)
+            request_id,
+            from_business_uid,
+            to_business_uid,
+            request_status,
+            created_at,
+            relation_type,
+            business_from:businesses!from_business_uid(business_name),
+            business_to:businesses!to_business_uid(business_name)
+          `)
         .or(`from_business_uid.eq.${userBusinessData.business_uid},to_business_uid.eq.${userBusinessData.business_uid}`);
       if (error) {
         setToast({
@@ -236,14 +245,15 @@ const Connections = () => {
       setTimeout(() => setToast({ ...toast, show: false }), 5000);
     }
   };
+  const handleBusinessClick = (businessUid) => {
+    navigate(`/business/${businessUid}`); // Navigate to the BusinessDetails page
+  };
 
   return (
     <div className="container mt-5">
       {toast.show && (
         <Toast type={toast.type} message={toast.message} show={toast.show} onClose={() => setToast({ ...toast, show: false })} />
       )}
-
-      <h2>Connections</h2>
 
       {/* Vertical Toolbar at the Bottom Right */}
       <div className="position-fixed bottom-0 end-0 m-4 d-flex flex-column align-items-center" style={{ zIndex: 1050 }}>
@@ -421,82 +431,104 @@ const Connections = () => {
       )}
 
       <div className="container my-5">
-        <h2 className="text-center mb-4">Business Relations</h2>
+        <h2 className="text-center mb-4">Business Connections</h2>
 
-        {/* Customer Table */}
         <div className="mb-4">
-          <h3 className="text-center text-primary mb-3">Customer Business Relations</h3>
-          <table className="table align-middle bg-light table-bordered table-hover rounded shadow-lg">
-            <thead className="bg-success text-white">
-              <tr>
-                <th>Customer Business Name</th>
-                <th>Owner Name</th>
-                <th>Contact</th>
-                <th>Business ID</th>
-              </tr>
-            </thead>
-            <tbody className="table-group-divider">
+          <h3 className="text-secondary mb-3">Customer Business Relations</h3>
+          <Table className="bg-light rounded shadow-lg">
+            <TableHead className="bg-black">
+              <TableRow>
+                <TableCell style={{ color: "white" }}>
+                  Customer Business Name
+                </TableCell>
+
+                <TableCell style={{ color: "white" }}>Owner Name</TableCell>
+                <TableCell style={{ color: "white" }}>Contact</TableCell>
+                <TableCell style={{ color: "white" }}>Business ID</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
               {businessRelations.length > 0 ? (
                 businessRelations.map((relation) => {
                   // If the user is the seller (business_uid_2 is the user), show business_uid_1 as the customer
-                  const customerBusiness = relation.business_uid_2 === userBusinessData.business_uid
-                    ? relation.business_info_1
-                    : null;
+                  const customerBusiness =
+                    relation.business_uid_2 === userBusinessData.business_uid
+                      ? relation.business_info_1
+                      : null;
 
                   return customerBusiness ? (
-                    <tr key={relation.relation_id}>
-                      <td>{customerBusiness.business_name || "N/A"}</td>
-                      <td>{customerBusiness.owner_name || "N/A"}</td>
-                      <td>{customerBusiness.contact || "N/A"}</td>
-                      <td>{customerBusiness.business_id || "N/A"}</td>
-                    </tr>
+                    <TableRow key={relation.relation_id}>
+                      <TableCell>
+                        {customerBusiness.business_name || "N/A"}
+                      </TableCell>
+                      <TableCell>
+                        {customerBusiness.owner_name || "N/A"}
+                      </TableCell>
+                      <TableCell>{customerBusiness.contact || "N/A"}</TableCell>
+                      <TableCell>
+                        {customerBusiness.business_id || "N/A"}
+                      </TableCell>
+                    </TableRow>
                   ) : null;
                 })
               ) : (
-                <tr>
-                  <td colSpan="4" className="text-center">No customer relations found.</td>
-                </tr>
+                <TableRow>
+                  <TableCell colSpan={4} className="text-center">
+                    No customer relations found.
+                  </TableCell>
+                </TableRow>
               )}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
 
         {/* Seller Table */}
         <div>
-          <h3 className="text-center text-primary mb-3">Seller Business Relations</h3>
-          <table className="table align-middle bg-light table-bordered table-hover rounded shadow-lg">
-            <thead className="bg-danger text-white">
-              <tr>
-                <th>Seller Business Name</th>
-                <th>Owner Name</th>
-                <th>Contact</th>
-                <th>Business ID</th>
-              </tr>
-            </thead>
-            <tbody className="table-group-divider">
+          <h3 className="text-secondary mb-3">Seller Business Relations</h3>
+          <Table className="bg-light rounded shadow-lg">
+            <TableHead className="bg-black" style={{ color: "white" }}>
+              <TableRow>
+                <TableCell style={{ color: "white" }}>
+                  Seller Business Name
+                </TableCell>
+                <TableCell style={{ color: "white" }}>Owner Name</TableCell>
+                <TableCell style={{ color: "white" }}>Contact</TableCell>
+                <TableCell style={{ color: "white" }}>Business ID</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
               {businessRelations.length > 0 ? (
                 businessRelations.map((relation) => {
                   // If the user is the customer (business_uid_1 is the user), show business_uid_2 as the seller
-                  const sellerBusiness = relation.business_uid_1 === userBusinessData.business_uid
-                    ? relation.business_info_2
-                    : null;
+                  const sellerBusiness =
+                    relation.business_uid_1 === userBusinessData.business_uid
+                      ? relation.business_info_2
+                      : null;
 
                   return sellerBusiness ? (
-                    <tr key={relation.relation_id}>
-                      <td>{sellerBusiness.business_name || "N/A"}</td>
-                      <td>{sellerBusiness.owner_name || "N/A"}</td>
-                      <td>{sellerBusiness.contact || "N/A"}</td>
-                      <td>{sellerBusiness.business_id || "N/A"}</td>
-                    </tr>
+                    <TableRow key={relation.relation_id}>
+                      <TableCell>
+                        {sellerBusiness.business_name || "N/A"}
+                      </TableCell>
+                      <TableCell>
+                        {sellerBusiness.owner_name || "N/A"}
+                      </TableCell>
+                      <TableCell>{sellerBusiness.contact || "N/A"}</TableCell>
+                      <TableCell>
+                        {sellerBusiness.business_id || "N/A"}
+                      </TableCell>
+                    </TableRow>
                   ) : null;
                 })
               ) : (
-                <tr>
-                  <td colSpan="4" className="text-center">No seller relations found.</td>
-                </tr>
+                <TableRow>
+                  <TableCell colSpan="4" className="text-center">
+                    No seller relations found.
+                  </TableCell>
+                </TableRow>
               )}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
       </div>
     </div>
